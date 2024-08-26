@@ -29,10 +29,6 @@ void UPlayerHotBar::CheckHotBar(int32 Index, bool& HasItemInSlot, EItemType& Ite
 
 void UPlayerHotBar::HandleSlotDrop(UItemsContainerMaster* FromContainer, int32 FromIndex, int32 DropIndex)
 {
-    //TObjectPtr<UItemsContainerMaster> LocalFromContainer = FromContainer;
-    //int32 LocalFromIndex = FromIndex;
-    //int32 LocalDropIndex = DropIndex;
-	
     if (FromContainer == this && FromIndex == DropIndex)
     {
         // DO NOTHING
@@ -62,36 +58,37 @@ void UPlayerHotBar::AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecificI
 {
 	Super::AddItemToIndex(ItemInfo, LocalSpecificIndex, LocalItemIndex, Success);
 	
-	if (AASurvivalCharacter* SurvivalCharacter = Cast<AASurvivalCharacter>(GetOwner()))
+	if (ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(GetOwner()))
 	{
-		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
-		if (CharacterInterface)
+		TObjectPtr<AASurvivalCharacter> SurvivalCharacter = nullptr;
+		
+		CharacterInterface->GetCharRef(SurvivalCharacter);
+
+		if (SurvivalCharacter)
 		{
 			FItemStructure SpecificItemInfo;
 			
 			GetItemAtIndex(LocalSpecificIndex, SpecificItemInfo);
 			
 			CharacterInterface->UpdateItem(GetContainerType(), LocalSpecificIndex, SpecificItemInfo);
-			
-			CharacterInterface->UpdateCraftItem(GetContainerType(), LocalSpecificIndex, SpecificItemInfo);
 		}
 	}
 }
-
 
 
 void UPlayerHotBar::RemoveItemAtIndex(int32 Index, bool& Success)
 {
 	Super::RemoveItemAtIndex(Index, Success);
 	
-	if (AASurvivalCharacter* SurvivalCharacter = Cast<AASurvivalCharacter>(GetOwner()))
+	if (ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(GetOwner()))
 	{
-		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
-		if (CharacterInterface)
+		TObjectPtr<AASurvivalCharacter> SurvivalCharacter = nullptr;
+		
+		CharacterInterface->GetCharRef(SurvivalCharacter);
+
+		if (SurvivalCharacter)
 		{
 			CharacterInterface->ResetItem(GetContainerType(), Index);
 		}
 	}
 }
-
-

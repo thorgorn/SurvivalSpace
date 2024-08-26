@@ -9,6 +9,9 @@
 
 UItemsContainerMaster::UItemsContainerMaster()
 {
+	ContainerType = GetContainerType();
+
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 TArray<FItemStructure> UItemsContainerMaster::GetItems() const
@@ -442,5 +445,3 @@ void UItemsContainerMaster::SwapItemIndexes(int32 TargetIndex, int32 FromIndex)
 	UpdateUI(TargetIndex, LocalFromItem);
 	UpdateUI(FromIndex, LocalTargetItem);
 }
-
-

@@ -237,7 +237,7 @@ protected:
 
 	virtual void DoublePressSlot(EContainerType ContainerType, int32 Index) override;
 
-	virtual void GetCharRef(AASurvivalCharacter*& Ref) override;
+	virtual void GetCharRef(TObjectPtr<AASurvivalCharacter> &CharRef);
 
 	virtual void GetCraftingRecipesAndItems(ECraftingType CraftingType) override;
 

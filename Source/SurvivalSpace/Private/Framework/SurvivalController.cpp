@@ -134,7 +134,7 @@ void ASurvivalController::UpdateCraftingUI_Implementation()
 	ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(GetPawn());
 	if (CharacterInterface)
 	{
-		AASurvivalCharacter* CharRef;
+		TObjectPtr<AASurvivalCharacter> CharRef;
 		CharacterInterface->GetCharRef(CharRef);
 		if (CharRef)
 		{
@@ -181,7 +181,7 @@ void ASurvivalController::UpdateHotBarUI_Implementation()
 	ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(GetPawn());
 	if (CharacterInterface)
 	{
-		AASurvivalCharacter* CharRef;
+		TObjectPtr<AASurvivalCharacter> CharRef;
 		CharacterInterface->GetCharRef(CharRef);
 		if (CharRef)
 		{

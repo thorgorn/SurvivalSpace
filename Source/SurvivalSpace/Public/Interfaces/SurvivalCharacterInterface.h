@@ -58,9 +58,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void DoublePressSlot(EContainerType ContainerType, int32 Index);
-
-	UFUNCTION(BlueprintCallable)
-	virtual void GetCharRef(AASurvivalCharacter* &Ref);
+	
+	virtual void GetCharRef(TObjectPtr<AASurvivalCharacter> &CharRef);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void UpdateCraftItem(EContainerType Container, int32 Index, FItemStructure ItemInfo);

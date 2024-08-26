@@ -42,7 +42,7 @@ void ISurvivalCharacterInterface::DoublePressSlot(EContainerType ContainerType, 
 {
 }
 
-void ISurvivalCharacterInterface::GetCharRef(AASurvivalCharacter*& Ref)
+void ISurvivalCharacterInterface::GetCharRef(TObjectPtr<AASurvivalCharacter> &CharRef)
 {
 }
 

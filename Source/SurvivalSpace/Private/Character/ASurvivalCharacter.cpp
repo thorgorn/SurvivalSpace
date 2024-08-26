@@ -356,9 +356,9 @@ void AASurvivalCharacter::DoublePressSlot(EContainerType ContainerType, int32 In
 	DoublePressOnServer(ContainerType, Index);
 }
 
-void AASurvivalCharacter::GetCharRef(AASurvivalCharacter*& Ref)
+void AASurvivalCharacter::GetCharRef(TObjectPtr<AASurvivalCharacter> &CharRef)
 {
-	Ref = this;
+	CharRef = this;
 }
 
 void AASurvivalCharacter::GetCraftingRecipesAndItems(ECraftingType CraftingType)
