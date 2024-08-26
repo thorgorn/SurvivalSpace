@@ -9,7 +9,7 @@ class UItemInfo;
 USTRUCT(Blueprintable)
 struct FItemStructure
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	FItemStructure() = default;
 
@@ -57,7 +57,7 @@ struct FItem
 USTRUCT(Blueprintable)
 struct FResourceStructure
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	FResourceStructure() = default;
 	
