@@ -23,10 +23,19 @@ public:
 	UItemsContainerMaster();
 	
 	//--------------------------------------------------------------------------------------------
+	// ITEMS CONTAINER MASTER GETTER FUNCTIONS
+	//--------------------------------------------------------------------------------------------
+	UFUNCTION(BlueprintPure, Category = "Items Container Master")
+	TArray<FItemStructure> GetItems() const;
+
+	UFUNCTION(BlueprintPure, Category = "Items Container Master")
+	EContainerType GetContainerType() const;
+
+	//--------------------------------------------------------------------------------------------
 	// ITEMS CONTAINER MASTER PUBLIC FUNCTIONS
 	//--------------------------------------------------------------------------------------------
-
-
+	
+	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
 	void TransferItem(UItemsContainerMaster* ToComponent , int32 ToSpecificIndex, int32 ItemIndexToTransfer);
 	
 	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Items Container Master")
@@ -50,11 +59,7 @@ public:
 	//--------------------------------------------------------------------------------------------
 	// ITEMS CONTAINER MASTER PUBLIC PROPERTIES & VARIABLES
 	//--------------------------------------------------------------------------------------------
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Inventory")
-	EContainerType ContainerType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
-	TArray<FItemStructure> Items;
 	
 protected:
 	
@@ -87,10 +92,16 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
 	virtual void SwapItemIndexes(int32 TargetIndex, int32 FromIndex);
-	
-	//--------------------------------------------------------------------------------------------
-	// ITEMS CONTAINER MASTER PROTECTED PROPERTIES & VARIABLES
-	//--------------------------------------------------------------------------------------------
 
+
+private:
+	//--------------------------------------------------------------------------------------------
+	// ITEMS CONTAINER MASTER PRIVATE PROPERTIES & VARIABLES
+	//--------------------------------------------------------------------------------------------
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
+	EContainerType ContainerType;
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TArray<FItemStructure> Items;
 
 };

@@ -140,13 +140,13 @@ void ASurvivalController::UpdateCraftingUI_Implementation()
 		{
 			int32 CraftingIndex = 0; 
 			
-			for (int32 InventoryIndex = 0; InventoryIndex < CharRef->PlayerInventory->Items.Num(); ++InventoryIndex)
+			for (int32 InventoryIndex = 0; InventoryIndex < CharRef->PlayerInventory->GetItems().Num(); ++InventoryIndex)
 			{
-				UItemInfo* LoadedAsset = CharRef->PlayerInventory->Items[InventoryIndex].ItemAsset.LoadSynchronous();
+				UItemInfo* LoadedAsset = CharRef->PlayerInventory->GetItems()[InventoryIndex].ItemAsset.LoadSynchronous();
 
 				if (LoadedAsset && LoadedAsset->ItemType == EItemType::Resource)
 				{
-					CharacterInterface->UpdateCraftItem(EContainerType::Crafting, CraftingIndex, CharRef->PlayerInventory->Items[InventoryIndex]);
+					CharacterInterface->UpdateCraftItem(EContainerType::Crafting, CraftingIndex, CharRef->PlayerInventory->GetItems()[InventoryIndex]);
 					CraftingIndex++;
 				}
 				else
@@ -156,13 +156,13 @@ void ASurvivalController::UpdateCraftingUI_Implementation()
 			}
 
 			
-			for (int32 HotbarIndex = 0; HotbarIndex < CharRef->PlayerHotBar->Items.Num(); ++HotbarIndex)
+			for (int32 HotbarIndex = 0; HotbarIndex < CharRef->PlayerHotBar->GetItems().Num(); ++HotbarIndex)
 			{
-				UItemInfo* LoadedAsset = CharRef->PlayerHotBar->Items[HotbarIndex].ItemAsset.LoadSynchronous();
+				UItemInfo* LoadedAsset = CharRef->PlayerHotBar->GetItems()[HotbarIndex].ItemAsset.LoadSynchronous();
 
 				if (LoadedAsset && LoadedAsset->ItemType == EItemType::Resource)
 				{
-					CharacterInterface->UpdateCraftItem(EContainerType::Crafting, CraftingIndex, CharRef->PlayerHotBar->Items[HotbarIndex]);
+					CharacterInterface->UpdateCraftItem(EContainerType::Crafting, CraftingIndex, CharRef->PlayerHotBar->GetItems()[HotbarIndex]);
 					CraftingIndex++; 
 				}
 				else
@@ -185,15 +185,15 @@ void ASurvivalController::UpdateHotBarUI_Implementation()
 		CharacterInterface->GetCharRef(CharRef);
 		if (CharRef)
 		{
-			for (int32 Index = 0; Index < CharRef->PlayerHotBar->Items.Num(); ++Index)
+			for (int32 Index = 0; Index < CharRef->PlayerHotBar->GetItems().Num(); ++Index)
 			{
-				if (CharRef->PlayerHotBar->Items[Index].ItemID == 0)
+				if (CharRef->PlayerHotBar->GetItems()[Index].ItemID == 0)
 				{
 					CharacterInterface->ResetItem(EContainerType::HotBar, Index);
 				}
 				else
 				{
-					CharacterInterface->UpdateItem(EContainerType::HotBar, Index, CharRef->PlayerHotBar->Items[Index]);
+					CharacterInterface->UpdateItem(EContainerType::HotBar, Index, CharRef->PlayerHotBar->GetItems()[Index]);
 				}
 			}
 		}

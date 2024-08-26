@@ -8,7 +8,7 @@
 
 void UPlayerHotBar::CheckHotBar(int32 Index, bool& HasItemInSlot, EItemType& ItemType)
 {
-	if (Items[Index].ItemID == 0)
+	if (GetItems()[Index].ItemID == 0)
 	{
 		HasItemInSlot = false;
 	}
@@ -16,9 +16,9 @@ void UPlayerHotBar::CheckHotBar(int32 Index, bool& HasItemInSlot, EItemType& Ite
 	{
 		HasItemInSlot = true;
 		
-		if (Items[Index].ItemAsset.ToSoftObjectPath().IsValid())
+		if (GetItems()[Index].ItemAsset.ToSoftObjectPath().IsValid())
 		{
-			UItemInfo* LoadedAsset = Items[Index].ItemAsset.LoadSynchronous();
+			UItemInfo* LoadedAsset = GetItems()[Index].ItemAsset.LoadSynchronous();
 			if (LoadedAsset)
 			{
 				ItemType = LoadedAsset->ItemType;
@@ -39,7 +39,7 @@ void UPlayerHotBar::HandleSlotDrop(UItemsContainerMaster* FromContainer, int32 F
     }
     else
     {
-        switch (FromContainer->ContainerType) {
+        switch (FromContainer->GetContainerType()) {
         case EContainerType::Inventory:
             FromContainer->TransferItem(this, DropIndex, FromIndex);
             break;
@@ -71,9 +71,9 @@ void UPlayerHotBar::AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecificI
 			
 			GetItemAtIndex(LocalSpecificIndex, SpecificItemInfo);
 			
-			CharacterInterface->UpdateItem(ContainerType, LocalSpecificIndex, SpecificItemInfo);
+			CharacterInterface->UpdateItem(GetContainerType(), LocalSpecificIndex, SpecificItemInfo);
 			
-			CharacterInterface->UpdateCraftItem(ContainerType, LocalSpecificIndex, SpecificItemInfo);
+			CharacterInterface->UpdateCraftItem(GetContainerType(), LocalSpecificIndex, SpecificItemInfo);
 		}
 	}
 }
@@ -89,7 +89,7 @@ void UPlayerHotBar::RemoveItemAtIndex(int32 Index, bool& Success)
 		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
 		if (CharacterInterface)
 		{
-			CharacterInterface->ResetItem(ContainerType, Index);
+			CharacterInterface->ResetItem(GetContainerType(), Index);
 		}
 	}
 }

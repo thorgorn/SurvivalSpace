@@ -11,6 +11,16 @@ UItemsContainerMaster::UItemsContainerMaster()
 {
 }
 
+TArray<FItemStructure> UItemsContainerMaster::GetItems() const
+{
+	return Items;
+}
+
+EContainerType UItemsContainerMaster::GetContainerType() const
+{
+	return ContainerType;
+}
+
 
 void UItemsContainerMaster::BeginPlay()
 {

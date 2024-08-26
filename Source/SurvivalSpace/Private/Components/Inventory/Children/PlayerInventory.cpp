@@ -17,7 +17,7 @@ void UPlayerInventory::HandleSlotDrop(UItemsContainerMaster* FromContainer, int3
 	}
 	else
 	{
-		switch (FromContainer->ContainerType) {
+		switch (FromContainer->GetContainerType()) {
 		case EContainerType::Inventory:
 			FromContainer->TransferItem(this, DropIndex, FromIndex);
 			break;
@@ -48,7 +48,7 @@ void UPlayerInventory::AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecif
 			
 			GetItemAtIndex(LocalSpecificIndex, SpecificItemInfo);
 			
-			CharacterInterface->UpdateItem(ContainerType, LocalSpecificIndex, SpecificItemInfo);
+			CharacterInterface->UpdateItem(GetContainerType(), LocalSpecificIndex, SpecificItemInfo);
 		}
 	}
 }
@@ -62,7 +62,7 @@ void UPlayerInventory::RemoveItemAtIndex(int32 Index, bool& Success)
 		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
 		if (CharacterInterface)
 		{
-			CharacterInterface->ResetItem(ContainerType, Index);
+			CharacterInterface->ResetItem(GetContainerType(), Index);
 		}
 	}
 }
