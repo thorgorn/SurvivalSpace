@@ -30,24 +30,22 @@ void UCraftingItemContainerGrid::NativeConstruct()
 
 void UCraftingItemContainerGrid::AddSlots(int32 Amount)
 {
-	int32 LocalLoopIndex = Amount;
+	//int32 LocalLoopIndex = Amount;
+	
 	int32 FirstIndex = 1;
 
-	for (int32 Index = FirstIndex; Index <= LocalLoopIndex; ++Index)
+	for (int32 Index = FirstIndex; Index <= Amount; ++Index)
 	{
-		// Create a new Inventory Slot Widget
 		if (CraftingSlotClass)
 		{
 			CraftingSlot = CreateWidget<UCraftingSlot>(GetWorld(), CraftingSlotClass);
-
-			// Set the ContainerType of the new slot
+			
 			if (CraftingSlot)
 			{
 				CraftingSlot->ContainerType = ContainerType;
 				CraftingSlot->Parent = this;
 				Slots.Add(CraftingSlot);
-				CraftingSlot->ItemIndex = Slots.Num() - 1; // Correcting the ItemIndex to zero-based index
-				// Add the new slot to the grid
+				CraftingSlot->ItemIndex = Slots.Num() - 1;
 				AddSlotToGrid(CraftingSlot->ItemIndex, CraftingSlot);
 			}
 		}
@@ -60,31 +58,27 @@ void UCraftingItemContainerGrid::AddSlotToGrid(int32 Index, UCraftingSlot* Craft
 	{
 		return;
 	}
-
-	// Define local variables as in the blueprint logic
-	int32 LocalSlotIndex = Index;
-	UCraftingSlot* LocalSlot = CraftingSlot;
-
-	// Add the slot to the grid
-	UUniformGridSlot* GridSlot = Grid->AddChildToUniformGrid(LocalSlot);
+	
+	//int32 LocalSlotIndex = Index;
+	//UCraftingSlot* LocalSlot = CraftingSlot;
+	
+	UUniformGridSlot* GridSlot = Grid->AddChildToUniformGrid(CraftingSlot);
 	if (!GridSlot)
 	{
 		return;
 	}
-
-	// Calculate row and column separately
+	
 	int32 SlotsPerRowValue = SlotsPerRow;
 
-	// Calculate Row and Column
-	double LocalSlotIndexAsDouble = UKismetMathLibrary::Conv_IntToDouble(LocalSlotIndex);
+
+	double LocalSlotIndexAsDouble = UKismetMathLibrary::Conv_IntToDouble(Index);
 	double SlotsPerRowAsDouble = UKismetMathLibrary::Conv_IntToDouble(SlotsPerRowValue);
 
 	double Remainder;
 	int32 ReturnValue = UKismetMathLibrary::FMod(LocalSlotIndexAsDouble, SlotsPerRowAsDouble, Remainder);
 	int32 Column = UKismetMathLibrary::FTrunc(Remainder);
 	int32 Row = UKismetMathLibrary::FTrunc(ReturnValue);
-
-	// Set row and column for the slot
+	
 	GridSlot->SetRow(Row);
 	GridSlot->SetColumn(Column);
 }

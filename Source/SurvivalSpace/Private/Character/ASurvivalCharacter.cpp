@@ -81,7 +81,7 @@ void AASurvivalCharacter::ToggleThirdPerson()
 
 void AASurvivalCharacter::SwitchCamera()
 {
-	if (!ControllerRef->InventoryShown)
+	if (!ControllerRef->bInventoryShown)
 	{
 		if (!bFirstPersonActive)
 		{
@@ -121,7 +121,7 @@ void AASurvivalCharacter::Look(const FInputActionValue& Value)
 
 void AASurvivalCharacter::StartJump()
 {	
-	if (!ControllerRef->InventoryShown)
+	if (!ControllerRef->bInventoryShown)
 	{
 		if (CurrentState == ECharacterStates::Idle)
 		{
@@ -132,7 +132,7 @@ void AASurvivalCharacter::StartJump()
 
 void AASurvivalCharacter::ToggleCrouch()
 {
-	if (!ControllerRef->InventoryShown)
+	if (!ControllerRef->bInventoryShown)
 	{
 		if (!GetCharacterMovement()->IsFalling())
 		{
@@ -145,7 +145,6 @@ void AASurvivalCharacter::ClientCrouch()
 {
 	if (HasAuthority())
 	{
-		// Handle server-side logic directly
 		if (CurrentState == ECharacterStates::Proning)
 		{
 			CurrentState = ECharacterStates::Idle;
@@ -157,7 +156,6 @@ void AASurvivalCharacter::ClientCrouch()
 	}
 	else
 	{
-		// Send request to server
 		CrouchOnServer();
 	}
 }
@@ -192,7 +190,7 @@ void AASurvivalCharacter::OnRep_CharacterState()
 
 void AASurvivalCharacter::ToggleProne()
 {
-	if (!ControllerRef->InventoryShown)
+	if (!ControllerRef->bInventoryShown)
 	{
 		ClientProne();
 	}
@@ -202,7 +200,6 @@ void AASurvivalCharacter::ClientProne()
 {
 	if (HasAuthority())
 	{
-		// Handle server-side logic directly
 		if (CurrentState == ECharacterStates::Crouching)
 		{
 			CurrentState = ECharacterStates::Idle;
@@ -214,7 +211,6 @@ void AASurvivalCharacter::ClientProne()
 	}
 	else
 	{
-		// Send request to server
 		ProneOnServer();
 	}
 }
@@ -245,7 +241,6 @@ void AASurvivalCharacter::UpdateItem(EContainerType Container, int32 Index, FIte
 		IControllerInterface* ControllerInterface = Cast<IControllerInterface>(PlayerController);
 		if (ControllerInterface)
 		{
-			// Use Execute_UpdateItemSlot to call the function
 			ControllerInterface->UpdateItemSlot(Container, Index, ItemInfo);
 		}
 	}
@@ -347,7 +342,6 @@ void AASurvivalCharacter::DestroyItem(int32 Index)
 		{
 			bool Success;
 			ContainerMaster->RemoveItemAtIndex(Index,Success);
-			UE_LOG(LogTemp, Warning, TEXT("DestroyItem Character called"));
 		}
 	}
 }
@@ -374,7 +368,6 @@ void AASurvivalCharacter::GetCraftingRecipesAndItems(ECraftingType CraftingType)
 
 void AASurvivalCharacter::GetItemsOnServer_Implementation(ECraftingType CraftingType)
 {
-    // Items Array Variable to pass into GetItemQuantities so we can use it
 	TArray<FItem> ItemsArray;
 	IControllerInterface* ControllerInterface = Cast<IControllerInterface>(GetController());
 	
@@ -412,7 +405,6 @@ void AASurvivalCharacter::HarvestLargeItem(FItemStructure Resource)
 		{
 			if (Resource.ItemAsset.ToSoftObjectPath().IsValid())
 			{
-				// Load the item asset if the path is valid
 				UItemInfo* LoadedAsset = Resource.ItemAsset.LoadSynchronous();
 				if (LoadedAsset)
 				{
@@ -447,19 +439,17 @@ void AASurvivalCharacter::Interaction(FRotator CameraRotation)
 		
 		FHitResult HitResult;
 		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredActor(this); // Ignore self
-
-		// Define the collision shape (a sphere)
+		CollisionParams.AddIgnoredActor(this);
+		
 		FCollisionShape CollisionShape;
-		CollisionShape.SetSphere(20.0f); // Sphere radius
-
-		// Perform the sphere sweep
+		CollisionShape.SetSphere(20.0f);
+		
 		bool bHit = GetWorld()->SweepSingleByChannel(
 			HitResult,
 			StartTrace,
 			EndTrace,
-			FQuat::Identity, // No rotation for the sphere
-			ECC_Camera, // Trace channel
+			FQuat::Identity,
+			ECC_Camera,
 			CollisionShape,
 			CollisionParams
 			);
@@ -472,7 +462,7 @@ void AASurvivalCharacter::Interaction(FRotator CameraRotation)
 				{
 					if (IsValid(EquipItemRef))
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Put Away Tool To Harvest"));
+						// Setup a widget notification to tell player to put tool away
 						bIsHarvesting = false;
 					}
 					else
@@ -482,17 +472,12 @@ void AASurvivalCharacter::Interaction(FRotator CameraRotation)
 						{
 							EResourceType ResourceType;
 							GroundItemInterface->GetResourceType(ResourceType);
-							// Check if the montage is already playing
 							UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 							if (AnimInstance && !AnimInstance->Montage_IsPlaying(InteractMontage))
 							{
 								HarvestGroundItem(HitResult.GetActor());
 								MontageMultiCast(InteractMontage);
 								MultiCastHarvestItemFX(HitResult.ImpactPoint, ResourceType);
-							}
-							else
-							{
-								//UE_LOG(LogTemp, Warning, TEXT("Montage is already playing, cannot spam."));
 							}
 							bIsHarvesting = false;
 						}
@@ -511,7 +496,6 @@ void AASurvivalCharacter::Interaction(FRotator CameraRotation)
 		else
 		{
 			bIsHarvesting = false;
-			//UE_LOG(LogTemp, Warning, TEXT("Interact Hit Nothing"));
 		}
 	}
 }
@@ -523,11 +507,12 @@ void AASurvivalCharacter::HarvestGroundItem(AActor* Actor)
 	if (GroundItemInterface)
 	{
 		float GroundItemHealth;
+		
 		TSoftObjectPtr<UHarvestingResource> GroundItemResource;
+		
 		GroundItemInterface->GetResourceHealth(GroundItemHealth);
+		
 		float LocalGroundItemHealth = GroundItemHealth - 15.0f;
-
-		UE_LOG(LogTemp, Warning, TEXT("Health = %f"), LocalGroundItemHealth);
 		
 		if (LocalGroundItemHealth <= 0.0f)
 		{
@@ -535,12 +520,13 @@ void AASurvivalCharacter::HarvestGroundItem(AActor* Actor)
 			
 			if (GroundItemResource.ToSoftObjectPath().IsValid())
 			{
-				// Load the item asset if the path is valid
 				UHarvestingResource* LoadedAsset = GroundItemResource.LoadSynchronous();
 				if (LoadedAsset)
 				{
 					AddResources(LoadedAsset->GivenItems);
+					
 					TSoftClassPtr<ADestructableHarvestableMaster> LocalDestructableClass = LoadedAsset->DestructableClass;
+					
 					if (IsValid(Actor))
 					{
 						FTransform LocalActorTransform = Actor->GetTransform();
@@ -562,7 +548,6 @@ void AASurvivalCharacter::HarvestGroundItem(AActor* Actor)
 			
 			if (GroundItemResource.ToSoftObjectPath().IsValid())
 			{
-				// Load the item asset if the path is valid
 				UHarvestingResource* LoadedAsset = GroundItemResource.LoadSynchronous();
 				if (LoadedAsset)
 				{
@@ -598,7 +583,6 @@ void AASurvivalCharacter::AddResources(TArray<FResourceStructure> GivenResources
 		{
 			if (LocalResourceToAdd.ToSoftObjectPath().IsValid())
 			{
-				// Load the item asset if the path is valid
 				UItemInfo* LoadedAsset = LocalResourceToAdd.LoadSynchronous();
 				if (LoadedAsset)
 				{
@@ -628,14 +612,12 @@ void AASurvivalCharacter::AddResources(TArray<FResourceStructure> GivenResources
 
 void AASurvivalCharacter::MultiCastHarvestItemFX_Implementation(FVector HitLocation, EResourceType ResourceType)
 {
-	// Find the resource effects that match the given resource type
 	const FResourceEffects* ResourceEffects = ResourceEffectsArray.FindByPredicate(
 		[&](const FResourceEffects& Effects)
 		{
 			return Effects.ResourceType == ResourceType;
 		});
-
-	// If the matching resource effects were found, play the VFX and SFX
+	
 	if (ResourceEffects)
 	{
 		if (ResourceEffects->VFX)
@@ -662,10 +644,6 @@ void AASurvivalCharacter::MultiCastHarvestItemFX_Implementation(FVector HitLocat
 				HarvestSoundAttenuation
 			);
 		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No matching resource effects found for resource type: %d"), static_cast<int32>(ResourceType));
 	}
 }
 
@@ -844,7 +822,6 @@ void AASurvivalCharacter::UseHotBar(int32 Index)
 						if (LoadedAsset)
 						{
 							ResourceEffectsArray = LoadedAsset->ResourceEffectsArray;
-							// Load the class asset
 							TSubclassOf<AItemMaster> ItemClass = LoadedAsset->ItemClassRef.LoadSynchronous();
 							if (ItemClass)
 							{
@@ -890,31 +867,29 @@ void AASurvivalCharacter::MulticastDeEquipItem_Implementation()
 void AASurvivalCharacter::SpawnEquipItem(TSubclassOf<AActor> Class, int32 EquippedIndex)
 {
 	EquippedItemIndex = EquippedIndex;
-
-	// Create a transform with location (0, 0, 0), rotation (0, 0, 0), and scale (1, 1, 1)
+	
 	FTransform SpawnTransform;
+	
 	SpawnTransform.SetLocation(FVector::ZeroVector);
+	
 	SpawnTransform.SetRotation(FQuat::Identity);
+	
 	SpawnTransform.SetScale3D(FVector::OneVector);
-
-	// Spawn the actor with the specified transform
+	
 	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(Class, SpawnTransform);
 	if (SpawnedActor)
 	{
 		EquipItemRef = SpawnedActor;
 		EquipItemRef->SetOwner(this);
 		
-		// Check if the spawned actor implements the equippable interface
 		IEquippableItemInterface* EquippableInterface = Cast<IEquippableItemInterface>(EquipItemRef);
 		if (EquippableInterface)
 		{
 			FName NewSocketName;
 			EEquippableState NewEquippedState;
 			
-			// Retrieve equippable info from the interface
 			EquippableInterface->GetEquippableInfo(NewSocketName, NewEquippedState);
 			
-			// Multicast to all clients to equip the item
 			MultiCastEquipItem(EquipItemRef, NewSocketName, NewEquippedState);
 		}
 	}
@@ -933,7 +908,6 @@ void AASurvivalCharacter::LeftMouseOnServer_Implementation()
 {
 	if (IsValid(EquipItemRef))
 	{
-		// Check if the spawned actor implements the equippable interface
 		IEquippableItemInterface* EquippableInterface = Cast<IEquippableItemInterface>(EquipItemRef);
 		if (EquippableInterface)
 		{
@@ -962,24 +936,22 @@ void AASurvivalCharacter::MontageMultiCast_Implementation(UAnimMontage* Montage)
 
 			AnimInstance->Montage_Play(Montage);
 			AnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, Montage);
-
-			// Bind the notify begin event
+			
 			AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &AASurvivalCharacter::OnNotifyBegin);
 		}
 		else
 		{
-			bUsingItem = false; // Reset the flag if failed to get AnimInstance
+			bUsingItem = false;
 		}
 	}
 	else
 	{
-		bUsingItem = false; // Reset the flag if montage is null
+		bUsingItem = false;
 	}
 }
 
 void AASurvivalCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("OnNotifyBegin called with NotifyName: %s"), *NotifyName.ToString());
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
@@ -991,7 +963,6 @@ void AASurvivalCharacter::OnNotifyBegin(FName NotifyName, const FBranchingPointN
 		if (EquippableInterface)
 		{
 			EquippableInterface->NotifyInterface();
-			//UE_LOG(LogTemp, Warning, TEXT("Did implement interface for Notify"));
 			if (AnimInstance)
 			{
 				AnimInstance->OnPlayMontageNotifyBegin.RemoveDynamic(this, &AASurvivalCharacter::OnNotifyBegin);
@@ -1077,8 +1048,7 @@ void AASurvivalCharacter::UnequipItem(int32 Index)
 			EquipItemRef->Destroy();
 			EquipItemRef = nullptr;
 			MulticastDeEquipItem();
-
-			// Reset the equipped state
+			
 			EquippedState = EEquippableState::Default;
 			OnRep_EquippedState();
 		}

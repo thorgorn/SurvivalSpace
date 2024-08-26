@@ -24,8 +24,6 @@ void UCraftingContainer::InitializeSlots()
 
 void UCraftingContainer::UpdateSlots(ECraftingType ItemCraftingType, TArray<FItem> ItemArray)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Updates Crafting Slots called"));
-
 	CraftingType = ItemCraftingType;
 
 	Grid->ClearChildren();
@@ -40,34 +38,33 @@ void UCraftingContainer::UpdateSlots(ECraftingType ItemCraftingType, TArray<FIte
 void UCraftingContainer::AddSlots(ECraftingType InCraftingType, TArray<FItem> ItemArray, bool bAdminMode)
 {
     TArray<FItem> LocalItemArray = ItemArray;
-    FName PathName; // Declare the variable once
-
-    // Determine the path based on the crafting type
+    FName PathName;
+    
     switch (InCraftingType)
     {
     case ECraftingType::PlayerInventory:
-        PathName = "/Game/_Main/DataAssets/ItemRecipes/PlayerInventory"; // Change to the desired asset path for PlayerInventory
+        PathName = "/Game/_Main/DataAssets/ItemRecipes/PlayerInventory";
         break;
     case ECraftingType::CookingPot:
-        PathName = "/Game/CookingPotPath"; // Change to the desired asset path for CookingPot
+        PathName = "/Game/CookingPotPath";
         break;
     case ECraftingType::CraftingBench:
-        PathName = "/Game/CraftingBenchPath"; // Change to the desired asset path for CraftingBench
+        PathName = "/Game/CraftingBenchPath"; 
         break;
     case ECraftingType::SmeltingForge:
-        PathName = "/Game/SmeltingForgePath"; // Change to the desired asset path for SmeltingForge
+        PathName = "/Game/SmeltingForgePath";
         break;
     case ECraftingType::AdvancedWorkBench:
-        PathName = "/Game/AdvancedWorkBenchPath"; // Change to the desired asset path for AdvancedWorkBench
+        PathName = "/Game/AdvancedWorkBenchPath";
         break;
     case ECraftingType::StorageBox:
-        PathName = "/Game/StorageBoxPath"; // Change to the desired asset path for StorageBox
+        PathName = "/Game/StorageBoxPath";
         break;
     case ECraftingType::CropPlot:
-        PathName = "/Game/CropPlotPath"; // Change to the desired asset path for CropPlot
+        PathName = "/Game/CropPlotPath";
         break;
     default:
-        PathName = "/Game/DefaultPath"; // Optional: Default path if none of the cases match
+        PathName = "/Game/DefaultPath";
         break;
     }
 
@@ -80,17 +77,14 @@ void UCraftingContainer::AddSlots(ECraftingType InCraftingType, TArray<FItem> It
         }
         else
         {
-            // Get the Asset Registry module
             IAssetRegistry& AssetRegistry = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry").Get();
-
-            // Prepare an array to store the asset data
+            
             TArray<FAssetData> LocalDataAssets;
-
-            // Use GetAssetsByPath to fill the array with assets found at the specified path
-            bool bRecursive = true;  // Set to true if you want to include subdirectories
+            
+            bool bRecursive = true;
+            
             AssetRegistry.GetAssetsByPath(PathName, LocalDataAssets, bRecursive);
-
-            // Process the assets found and add to LocalItemArray or handle them appropriately
+            
             for (const FAssetData& AssetData : LocalDataAssets)
             {
                 UItemRecipe* ItemRecipe = Cast<UItemRecipe>(AssetData.GetAsset());
@@ -121,56 +115,44 @@ void UCraftingContainer::AddSlots(ECraftingType InCraftingType, TArray<FItem> It
                     }
                 }
             }
-
-            // Example: Print a log to confirm the assets have been added
-            //UE_LOG(LogTemp, Log, TEXT("Added %d assets from path: %s"), LocalItemArray.Num(), *PathName.ToString());
         }
         break;
     case ECraftingType::CookingPot:
-        // Add your logic for CookingPot
         break;
     case ECraftingType::CraftingBench:
-        // Add your logic for CraftingBench
         break;
     case ECraftingType::SmeltingForge:
-        // Add your logic for SmeltingForge
         break;
     case ECraftingType::AdvancedWorkBench:
-        // Add your logic for AdvancedWorkBench
         break;
     case ECraftingType::StorageBox:
-        // Add your logic for StorageBox
         break;
     case ECraftingType::CropPlot:
-        // Add your logic for CropPlot
         break;
     }
 }
 
 void UCraftingContainer::AddSlotsToGrid(int32 Index, UCraftingRecipeSlot* InSlot)
 {
-    int32 LocalSlotIndex = Index;
-    UCraftingRecipeSlot* LocalCraftingSlot = InSlot;
+    //int32 LocalSlotIndex = Index;
+    //UCraftingRecipeSlot* LocalCraftingSlot = InSlot;
 
-    UUniformGridSlot* GridSlot = Grid->AddChildToUniformGrid(LocalCraftingSlot);
+    UUniformGridSlot* GridSlot = Grid->AddChildToUniformGrid(InSlot);
     if (!GridSlot)
     {
         return;
     }
-
-    // Calculate row and column separately
+    
     int32 SlotsPerRowValue = SlotsPerRow;
-
-    // Calculate Row and Column
-    double LocalSlotIndexAsDouble = UKismetMathLibrary::Conv_IntToDouble(LocalSlotIndex);
+    
+    double LocalSlotIndexAsDouble = UKismetMathLibrary::Conv_IntToDouble(Index);
     double SlotsPerRowAsDouble = UKismetMathLibrary::Conv_IntToDouble(SlotsPerRowValue);
 
     double Remainder;
     int32 ReturnValue = UKismetMathLibrary::FMod(LocalSlotIndexAsDouble, SlotsPerRowAsDouble, Remainder);
     int32 Column = UKismetMathLibrary::FTrunc(Remainder);
     int32 Row = UKismetMathLibrary::FTrunc(ReturnValue);
-
-    // Set row and column for the slot
+    
     GridSlot->SetRow(Row);
     GridSlot->SetColumn(Column);
 }
@@ -182,24 +164,23 @@ void UCraftingContainer::CheckCraftableItem(TArray<FItemRecipes> RequiredItems, 
     TArray<FItem> LocalItemsArray = ItemsArray;
     TArray<FItemRecipeInfo> LocalItemsInInventory;
 
-    bool bDoesNotContainItems = false; // Start assuming all items can be crafted.
+    bool bDoesNotContainItems = false;
 
     for (int32 Index = 0; Index < LocalRequiredItems.Num(); ++Index)
     {
-        bool bLocalFound = false; // Reset for each required item.
+        bool bLocalFound = false; 
 
         if (LocalItemsArray.Num() == 0)
         {
-            // No items in inventory; cannot craft any
             FItemRecipeInfo NewItem;
             NewItem.ItemID = LocalRequiredItems[Index].ItemID;
             NewItem.ItemIcon = LocalRequiredItems[Index].ItemIcon;
             NewItem.ItemName = LocalRequiredItems[Index].ItemName;
             NewItem.CurrentQuantity = 0;
             NewItem.NeededQuantity = LocalRequiredItems[Index].ItemQuantity;
-            bDoesNotContainItems = true; // Missing all items
+            bDoesNotContainItems = true;
             LocalItemsInInventory.Add(NewItem);
-            continue; // Move to the next required item
+            continue;
         }
 
         for (int32 LocalItemIndex = 0; LocalItemIndex < LocalItemsArray.Num(); ++LocalItemIndex)
@@ -217,30 +198,29 @@ void UCraftingContainer::CheckCraftableItem(TArray<FItemRecipes> RequiredItems, 
 
                 if (LocalItemsArray[LocalItemIndex].ItemQuantity < LocalRequiredItems[Index].ItemQuantity)
                 {
-                    bDoesNotContainItems = true; // Not enough items to craft
+                    bDoesNotContainItems = true;
                 }
 
                 LocalItemsInInventory.Add(NewItem);
-                break; // Exit loop once item is found and processed
+                break;
             }
         }
 
         if (!bLocalFound)
         {
-            // Item is not in the inventory
             FItemRecipeInfo NewItem;
             NewItem.ItemID = LocalRequiredItems[Index].ItemID;
             NewItem.ItemIcon = LocalRequiredItems[Index].ItemIcon;
             NewItem.ItemName = LocalRequiredItems[Index].ItemName;
             NewItem.CurrentQuantity = 0;
             NewItem.NeededQuantity = LocalRequiredItems[Index].ItemQuantity;
-            bDoesNotContainItems = true; // Missing required item
+            bDoesNotContainItems = true;
             LocalItemsInInventory.Add(NewItem);
         }
     }
 
     LocalItems = LocalItemsInInventory;
-    bCanCraft = !bDoesNotContainItems; // Can craft if no missing or insufficient items
+    bCanCraft = !bDoesNotContainItems;
 }
 
 

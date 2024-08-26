@@ -101,7 +101,7 @@ protected:
 	TObjectPtr<UInputAction> ThirdPersonAction;
 
 	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> SwitchCameraAction; // Used for gamepads
+	TObjectPtr<UInputAction> SwitchCameraAction;
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> CrouchAction;

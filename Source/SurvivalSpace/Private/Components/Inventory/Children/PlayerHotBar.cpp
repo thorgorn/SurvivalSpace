@@ -15,47 +15,36 @@ void UPlayerHotBar::CheckHotBar(int32 Index, bool& HasItemInSlot, EItemType& Ite
 	else
 	{
 		HasItemInSlot = true;
-
-		// Check if the soft object path is valid
+		
 		if (Items[Index].ItemAsset.ToSoftObjectPath().IsValid())
 		{
-			// Load the item asset if the path is valid
 			UItemInfo* LoadedAsset = Items[Index].ItemAsset.LoadSynchronous();
 			if (LoadedAsset)
 			{
 				ItemType = LoadedAsset->ItemType;
 			}
-			else
-			{
-				// Handle the case where the asset failed to load
-			}
-		}
-		else
-		{
-			// Handle the case where the path is invalid
 		}
 	}
 }
 
 void UPlayerHotBar::HandleSlotDrop(UItemsContainerMaster* FromContainer, int32 FromIndex, int32 DropIndex)
 {
-    UItemsContainerMaster* LocalFromContainer = FromContainer;
-    int32 LocalFromIndex = FromIndex;
-    int32 LocalDropIndex = DropIndex;
-
+    //TObjectPtr<UItemsContainerMaster> LocalFromContainer = FromContainer;
+    //int32 LocalFromIndex = FromIndex;
+    //int32 LocalDropIndex = DropIndex;
 	
-    if (LocalFromContainer == this && LocalFromIndex == LocalDropIndex)
+    if (FromContainer == this && FromIndex == DropIndex)
     {
         // DO NOTHING
     }
     else
     {
-        switch (LocalFromContainer->ContainerType) {
+        switch (FromContainer->ContainerType) {
         case EContainerType::Inventory:
-            LocalFromContainer->TransferItem(this, LocalDropIndex, LocalFromIndex);
+            FromContainer->TransferItem(this, DropIndex, FromIndex);
             break;
         case EContainerType::HotBar:
-            LocalFromContainer->TransferItem(this, LocalDropIndex, LocalFromIndex);
+            FromContainer->TransferItem(this, DropIndex, FromIndex);
             break;
         case EContainerType::Storage:
             break;
@@ -73,16 +62,17 @@ void UPlayerHotBar::AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecificI
 {
 	Super::AddItemToIndex(ItemInfo, LocalSpecificIndex, LocalItemIndex, Success);
 	
-	// GetOwner returns a pointer to the owning character
 	if (AASurvivalCharacter* SurvivalCharacter = Cast<AASurvivalCharacter>(GetOwner()))
 	{
-		// Check if the character implements the ISurvivalCharacterInterface
 		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
 		if (CharacterInterface)
 		{
 			FItemStructure SpecificItemInfo;
+			
 			GetItemAtIndex(LocalSpecificIndex, SpecificItemInfo);
+			
 			CharacterInterface->UpdateItem(ContainerType, LocalSpecificIndex, SpecificItemInfo);
+			
 			CharacterInterface->UpdateCraftItem(ContainerType, LocalSpecificIndex, SpecificItemInfo);
 		}
 	}
@@ -93,11 +83,9 @@ void UPlayerHotBar::AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecificI
 void UPlayerHotBar::RemoveItemAtIndex(int32 Index, bool& Success)
 {
 	Super::RemoveItemAtIndex(Index, Success);
-
-	// GetOwner returns a pointer to the owning character
+	
 	if (AASurvivalCharacter* SurvivalCharacter = Cast<AASurvivalCharacter>(GetOwner()))
 	{
-		// Check if the character implements the ISurvivalCharacterInterface
 		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
 		if (CharacterInterface)
 		{

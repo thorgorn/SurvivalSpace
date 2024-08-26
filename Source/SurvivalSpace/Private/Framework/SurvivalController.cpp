@@ -31,7 +31,7 @@ void ASurvivalController::BeginPlay()
 		{
 			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer))
 			{
-				// Add default mapping context
+				
 				if (DefaultMappingContext)
 				{
 					Subsystem->AddMappingContext(DefaultMappingContext, 0);
@@ -91,23 +91,18 @@ void ASurvivalController::ShowItemDestroyed(UTexture2D* ResourceImage, int32 Res
 void ASurvivalController::SetSelectedItem(EContainerType ContainerType, int32 SelectedIndex, bool ItemInFirstSlot,
 	EArmorType ArmorType)
 {
-	if (ItemSelected)
+	if (bItemSelected)
 	{
-		// GetOwner returns a pointer to the owning character
+		
 		if (AASurvivalCharacter* SurvivalCharacter = Cast<AASurvivalCharacter>(GetPawn()))
 		{
-			// Check if the character implements the ISurvivalCharacterInterface
+			
 			ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
 			if (CharacterInterface)
 			{
 				CharacterInterface->OnSlotDrop(ContainerType, SelectedContainer, SelectedItemIndex, SelectedIndex, ArmorType);
-				UE_LOG(LogTemp, Warning, TEXT("SetSelectedItem Controller called"));
-				UE_LOG(LogTemp, Warning, TEXT("Container Type = %s, SelectedContainer = %s, SelectedItemIndex = %d, SelectedIndex = %d"), 
-									*UEnum::GetValueAsString(ContainerType),
-									*UEnum::GetValueAsString(SelectedContainer),
-									SelectedItemIndex,
-									SelectedIndex);
-				ItemSelected = false;
+
+				bItemSelected = false;
 			}
 		}
 	}
@@ -115,7 +110,7 @@ void ASurvivalController::SetSelectedItem(EContainerType ContainerType, int32 Se
 	{
 		if (ItemInFirstSlot)
 		{
-			ItemSelected = true;
+			bItemSelected = true;
 			SelectedItemIndex = SelectedIndex;
 			SelectedContainer = ContainerType;
 			GetWorld()->GetTimerManager().SetTimer(SelectedItemTimerHandle, this, &ASurvivalController::ResetSelectedItemStatus, 5.0f, false);
@@ -131,8 +126,7 @@ void ASurvivalController::SetupCraftableItems(ECraftingType CraftingType, TArray
 
 void ASurvivalController::ResetSelectedItemStatus()
 {
-	ItemSelected = false;
-	//UE_LOG(LogTemp, Warning, TEXT("ResetSelectedItem Controller called"));
+	bItemSelected = false;
 }
 
 void ASurvivalController::UpdateCraftingUI_Implementation()
@@ -144,9 +138,8 @@ void ASurvivalController::UpdateCraftingUI_Implementation()
 		CharacterInterface->GetCharRef(CharRef);
 		if (CharRef)
 		{
-			int32 CraftingIndex = 0;  // Index for the crafting grid slots
-
-			// Check PlayerInventory for resource items
+			int32 CraftingIndex = 0; 
+			
 			for (int32 InventoryIndex = 0; InventoryIndex < CharRef->PlayerInventory->Items.Num(); ++InventoryIndex)
 			{
 				UItemInfo* LoadedAsset = CharRef->PlayerInventory->Items[InventoryIndex].ItemAsset.LoadSynchronous();
@@ -154,7 +147,7 @@ void ASurvivalController::UpdateCraftingUI_Implementation()
 				if (LoadedAsset && LoadedAsset->ItemType == EItemType::Resource)
 				{
 					CharacterInterface->UpdateCraftItem(EContainerType::Crafting, CraftingIndex, CharRef->PlayerInventory->Items[InventoryIndex]);
-					CraftingIndex++;  // Increment crafting index only when a resource is placed
+					CraftingIndex++;
 				}
 				else
 				{
@@ -162,7 +155,7 @@ void ASurvivalController::UpdateCraftingUI_Implementation()
 				}
 			}
 
-			// Check PlayerHotbar for resource items
+			
 			for (int32 HotbarIndex = 0; HotbarIndex < CharRef->PlayerHotBar->Items.Num(); ++HotbarIndex)
 			{
 				UItemInfo* LoadedAsset = CharRef->PlayerHotBar->Items[HotbarIndex].ItemAsset.LoadSynchronous();
@@ -170,7 +163,7 @@ void ASurvivalController::UpdateCraftingUI_Implementation()
 				if (LoadedAsset && LoadedAsset->ItemType == EItemType::Resource)
 				{
 					CharacterInterface->UpdateCraftItem(EContainerType::Crafting, CraftingIndex, CharRef->PlayerHotBar->Items[HotbarIndex]);
-					CraftingIndex++;  // Increment crafting index only when a resource is placed
+					CraftingIndex++; 
 				}
 				else
 				{
@@ -209,11 +202,11 @@ void ASurvivalController::UpdateHotBarUI_Implementation()
 
 void ASurvivalController::InventoryOnClient_Implementation()
 {
-	if (InventoryShown)
+	if (bInventoryShown)
 	{
 		FInputModeGameOnly GameInput;
 		SetInputMode(GameInput);
-		InventoryShown = false;
+		bInventoryShown = false;
 		SetShowMouseCursor(false);
 		SetIgnoreLookInput(false);
 		SetIgnoreMoveInput(false);
@@ -228,9 +221,8 @@ void ASurvivalController::InventoryOnClient_Implementation()
 			RootLayout->DefaultHUDLayout->HotBarWidget->SetVisibility(ESlateVisibility::Collapsed);
 			FInputModeUIOnly InputMode;
 			SetInputMode(InputMode);
-			InventoryShown = true;
+			bInventoryShown = true;
 			SetShowMouseCursor(true);
-			//UpdateCraftingUI();
 		}
 	}
 }
@@ -249,7 +241,7 @@ void ASurvivalController::SetupMainUIWidget()
 {
 	if (RootLayoutClass)
 	{
-		// Create the widget if this is a remote controller
+		
 		if (!HasAuthority())
 		{
 			RootLayout = CreateWidget<UMainUILayout>(this, RootLayoutClass);
@@ -260,9 +252,8 @@ void ASurvivalController::SetupMainUIWidget()
 				InitialiseInventoryWidget();
 			}
 		}
-		else // HasAuthority() is true, which includes listen server and dedicated server
+		else
 		{
-			// Ensure this is a local player controller (including the host in a listen server setup)
 			if (IsLocalPlayerController())
 			{
 				RootLayout = CreateWidget<UMainUILayout>(this, RootLayoutClass);
@@ -279,15 +270,14 @@ void ASurvivalController::SetupMainUIWidget()
 
 void ASurvivalController::DestroyItemWidget_Implementation(int32 ItemIndex)
 {
-	// GetOwner returns a pointer to the owning character
+	
 	if (AASurvivalCharacter* SurvivalCharacter = Cast<AASurvivalCharacter>(GetPawn()))
 	{
-		// Check if the character implements the ISurvivalCharacterInterface
+		
 		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
 		if (CharacterInterface)
 		{
 			CharacterInterface->DestroyItem(ItemIndex);
-			//UE_LOG(LogTemp, Warning, TEXT("DestroyItem Controller called"));
 		}
 	}
 }
@@ -298,7 +288,9 @@ void ASurvivalController::InitialiseInventoryWidget()
 	if (RootLayoutClass)
 	{
 		RootLayout->PushGameInventoryLayout();
-		InventoryShown = true;
+		
+		bInventoryShown = true;
+		
 		if (RootLayout->GameInventoryLayout)
 		{
 			RootLayout->GameInventoryLayout->DeactivateWidget();
@@ -311,7 +303,6 @@ void ASurvivalController::ShowItemDestroyOnClient_Implementation(UTexture2D* InI
 {
 	if (RootLayout)
 	{
-		// Assuming DefaultHUDLayout is a member of RootLayout and AddResource is a method in DefaultHUDLayout
 		if (RootLayout->DefaultHUDLayout)
 		{
 			RootLayout->DefaultHUDLayout->RemoveResource(InIcon, InQuantity, InName);
@@ -323,7 +314,6 @@ void ASurvivalController::ShowItemOnClient_Implementation(UTexture2D* InIcon, in
 {
 	if (RootLayout)
 	{
-		// Assuming DefaultHUDLayout is a member of RootLayout and AddResource is a method in DefaultHUDLayout
 		if (RootLayout->DefaultHUDLayout)
 		{
 			RootLayout->DefaultHUDLayout->AddResource(InIcon, InQuantity, InName);
@@ -335,7 +325,7 @@ void ASurvivalController::ShowItemOnClient_Implementation(UTexture2D* InIcon, in
 void ASurvivalController::UpdateSlotOnClient_Implementation(EContainerType Container, int32 Index,
                                                             FItemStructure ItemInfo)
 {
-	UInventorySlot* Widget = nullptr;
+	TObjectPtr<UInventorySlot> Widget = nullptr;
 
 	GetInventoryWidget(Container, Index, Widget);
 
@@ -351,13 +341,12 @@ void ASurvivalController::CraftWidgetOnClient_Implementation(ECraftingType Craft
 }
 
 
-void ASurvivalController::GetInventoryWidget(EContainerType Container, int32 SlotIndex, UInventorySlot*& Widget)
+void ASurvivalController::GetInventoryWidget(EContainerType Container, int32 SlotIndex, TObjectPtr<UInventorySlot>& Widget)
 {
 	Widget = nullptr;
 
 	if (!RootLayoutClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("RootLayoutClass is not valid"));
 		return;
 	}
     
@@ -377,7 +366,7 @@ void ASurvivalController::GetInventoryWidget(EContainerType Container, int32 Slo
 		{
 			return;
 		}
-		if (InventoryShown)
+		if (bInventoryShown)
 		{
 			Widget = RootLayout->GameInventoryLayout->HotBarWidget->ItemContainerGrid->Slots[SlotIndex];
 		}
@@ -397,13 +386,12 @@ void ASurvivalController::GetInventoryWidget(EContainerType Container, int32 Slo
 	}
 }
 
-void ASurvivalController::GetCraftingItemWidget(int32 SlotIndex, UCraftingSlot*& Widget)
+void ASurvivalController::GetCraftingItemWidget(int32 SlotIndex, TObjectPtr<UCraftingSlot>& Widget)
 {
 	Widget = nullptr;
 
 	if (!RootLayoutClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("RootLayoutClass is not valid"));
 		return;
 	}
 
@@ -412,7 +400,7 @@ void ASurvivalController::GetCraftingItemWidget(int32 SlotIndex, UCraftingSlot*&
 
 void ASurvivalController::ResetCraftSlotOnClient_Implementation(EContainerType Container, int32 Index)
 {
-	UCraftingSlot* Widget = nullptr;
+	TObjectPtr<UCraftingSlot> Widget = nullptr;
 
 	GetCraftingItemWidget(Index, Widget);
 
@@ -424,7 +412,7 @@ void ASurvivalController::ResetCraftSlotOnClient_Implementation(EContainerType C
 
 void ASurvivalController::UpdateCraftingSlotOnClient_Implementation(int32 Index, FItemStructure ItemInfo)
 {
-	UCraftingSlot* Widget = nullptr;
+	TObjectPtr<UCraftingSlot> Widget = nullptr;
 	GetCraftingItemWidget(Index, Widget);
 
 	if (Widget)
@@ -436,7 +424,7 @@ void ASurvivalController::UpdateCraftingSlotOnClient_Implementation(int32 Index,
 		}
 		else
 		{
-			Widget->ResetSlot(); // Reset the slot if it's not a resource item
+			Widget->ResetSlot();
 		}
 	}
 }
@@ -444,7 +432,7 @@ void ASurvivalController::UpdateCraftingSlotOnClient_Implementation(int32 Index,
 
 void ASurvivalController::ResetOnClient_Implementation(EContainerType Container, int32 Index)
 {
-	UInventorySlot* Widget = nullptr;
+	TObjectPtr<UInventorySlot> Widget = nullptr;
 
 	GetInventoryWidget(Container, Index, Widget);
 

@@ -14,8 +14,7 @@
 void UGameInventoryLayout::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	// Bind the CloseInventoryButton's OnClicked event to InventoryButtonClicked function
+	
 	if (CloseInventoryButton)
 	{
 		CloseInventoryButton->OnClicked().AddUObject(this, &UGameInventoryLayout::InventoryButtonClicked);

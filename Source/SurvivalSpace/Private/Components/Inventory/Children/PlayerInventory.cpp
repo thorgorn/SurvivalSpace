@@ -7,22 +7,22 @@
 
 void UPlayerInventory::HandleSlotDrop(UItemsContainerMaster* FromContainer, int32 FromIndex, int32 DropIndex)
 {
-	UItemsContainerMaster* LocalFromContainer = FromContainer;
-	int32 LocalFromIndex = FromIndex;
-	int32 LocalDropIndex = DropIndex;
+	//UItemsContainerMaster* LocalFromContainer = FromContainer;
+	//int32 LocalFromIndex = FromIndex;
+	//int32 LocalDropIndex = DropIndex;
 	
-	if (LocalFromContainer == this && LocalFromIndex == LocalDropIndex)
+	if (FromContainer == this && FromIndex == DropIndex)
 	{
 		// DO NOTHING
 	}
 	else
 	{
-		switch (LocalFromContainer->ContainerType) {
+		switch (FromContainer->ContainerType) {
 		case EContainerType::Inventory:
-			LocalFromContainer->TransferItem(this, LocalDropIndex, LocalFromIndex);
+			FromContainer->TransferItem(this, DropIndex, FromIndex);
 			break;
 		case EContainerType::HotBar:
-			LocalFromContainer->TransferItem(this, LocalDropIndex, LocalFromIndex);
+			FromContainer->TransferItem(this, DropIndex, FromIndex);
 			break;
 		case EContainerType::Storage:
 			break;
@@ -38,16 +38,16 @@ void UPlayerInventory::AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecif
 	bool& Success)
 {
 	Super::AddItemToIndex(ItemInfo, LocalSpecificIndex, LocalItemIndex, Success);
-
-	// GetOwner returns a pointer to the owning character
+	
 	if (AASurvivalCharacter* SurvivalCharacter = Cast<AASurvivalCharacter>(GetOwner()))
 	{
-		// Check if the character implements the ISurvivalCharacterInterface
 		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
 		if (CharacterInterface)
 		{
 			FItemStructure SpecificItemInfo;
+			
 			GetItemAtIndex(LocalSpecificIndex, SpecificItemInfo);
+			
 			CharacterInterface->UpdateItem(ContainerType, LocalSpecificIndex, SpecificItemInfo);
 		}
 	}
@@ -56,11 +56,9 @@ void UPlayerInventory::AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecif
 void UPlayerInventory::RemoveItemAtIndex(int32 Index, bool& Success)
 {
 	Super::RemoveItemAtIndex(Index, Success);
-
-	// GetOwner returns a pointer to the owning character
+	
 	if (AASurvivalCharacter* SurvivalCharacter = Cast<AASurvivalCharacter>(GetOwner()))
 	{
-		// Check if the character implements the ISurvivalCharacterInterface
 		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
 		if (CharacterInterface)
 		{

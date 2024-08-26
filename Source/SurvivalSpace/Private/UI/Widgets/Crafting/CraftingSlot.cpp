@@ -40,13 +40,10 @@ FReply UCraftingSlot::NativeOnFocusReceived(const FGeometry& InGeometry, const F
 
 void UCraftingSlot::UpdateSlot(FItemStructure ItemInfo)
 {
-	// Update ItemInfoData
 	ItemInfoData = ItemInfo;
-
-	// Update bHasItemInSlot based on whether ItemInfo is valid (assuming it is valid if ItemID is not zero)
+    
 	bHasItemInSlot = ItemInfo.ItemID != 0;
-
-	// Load ItemAsset asynchronously
+    
 	if (ItemInfo.ItemAsset.ToSoftObjectPath().IsValid())
 	{
 		FStreamableManager& AssetLoader = UAssetManager::GetStreamableManager();
@@ -67,7 +64,6 @@ void UCraftingSlot::OnItemAssetLoaded(FSoftObjectPath AssetPath, FItemStructure 
         ItemAssetInfo = Cast<UItemInfo>(LoadedAsset);
         if (ItemAssetInfo)
         {
-            // Successfully loaded item asset
             if (ItemIcon && ItemNameText && ItemAssetInfo->ItemIcon)
             {
                 ItemIcon->SetBrushFromTexture(ItemAssetInfo->ItemIcon);
@@ -80,7 +76,6 @@ void UCraftingSlot::OnItemAssetLoaded(FSoftObjectPath AssetPath, FItemStructure 
             {
             case EItemType::Resource:
                 {
-                    // Formated Text for Quantity
                     FFormatNamedArguments Args;
                     Args.Add(TEXT("Quantity"), FText::AsNumber(ItemInfo.ItemQuantity));
                     FText FormattedTextQuantity = FText::Format(NSLOCTEXT("InventorySlot", "QuantityFormat", "x{Quantity}"), Args);

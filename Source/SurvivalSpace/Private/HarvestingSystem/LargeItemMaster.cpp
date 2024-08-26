@@ -11,11 +11,9 @@
 
 ALargeItemMaster::ALargeItemMaster()
 {
-	// Create the DefaultSceneRoot component and set it as the root
 	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	SetRootComponent(DefaultSceneRoot);
-
-	// Create the StaticMesh component and attach it to the DefaultSceneRoot
+	
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(DefaultSceneRoot);
 }
@@ -42,14 +40,14 @@ void ALargeItemMaster::GetResourceType(EResourceType& OutResourceType)
 
 void ALargeItemMaster::HarvestFoliage(float Damage, EHarvestingToolType ToolType, EToolTier ToolTier, AActor* CharacterRef)
 {
-	float LocalDamage = Damage;
+	//float LocalDamage = Damage;
 	
-	float LocalHealth = Health - LocalDamage;
+	float LocalHealth = Health - Damage;
 
 	if (LocalHealth <= 0.0f)
 	{
 		//Overriden In Blueprints
-		FoliageDestroyed(LocalDamage, ToolType, ToolTier, CharacterRef);
+		FoliageDestroyed(Damage, ToolType, ToolTier, CharacterRef);
 	}
 	else
 	{
@@ -57,11 +55,10 @@ void ALargeItemMaster::HarvestFoliage(float Damage, EHarvestingToolType ToolType
 
 		if (Resources.ToSoftObjectPath().IsValid())
 		{
-			// Load the item asset if the path is valid
 			UHarvestingResource* LoadedAsset = Resources.LoadSynchronous();
 			if (LoadedAsset)
 			{
-				CalculateResources(LoadedAsset->GivenItems, LocalDamage, ToolType, ToolTier, CharacterRef);
+				CalculateResources(LoadedAsset->GivenItems, Damage, ToolType, ToolTier, CharacterRef);
 			}
 		}	
 	}
@@ -81,21 +78,17 @@ void ALargeItemMaster::CalculateResources(TArray<FResourceStructure> InGivenReso
 		float BaseVar = ResourceStruct.Quantity;
 
 		float RateVar = 1.0f;
-
-		// Random Float in Range
+		
 		float RandomFloatAToolType = FMath::RandRange(0.8f, 1.1f);
 		float RandomFloatBToolType = FMath::RandRange(0.04f, 0.5f);
-
-		// Tool Type Check (Assuming PreferredTool and ToolTypeVar are enums or similar types)
+		
 		bool bIsToolTypeEqual = (ResourceStruct.PreferredTool == ToolType);
 
 		float ToolTypeVar = UKismetMathLibrary::SelectFloat(RandomFloatAToolType, RandomFloatBToolType, bIsToolTypeEqual);
-
-		// Random Float in Range for Tool Tier
+		
 		float RandomFloatToolTierA = FMath::RandRange(0.8f, 1.2f);
 		float RandomFloatToolTierB = FMath::RandRange(1.2f, 1.8f);
-
-		// Select ToolTierVar based on ToolTier enum value
+		
 		float ToolTierVar;
 		switch (ToolTier)
 		{
@@ -111,15 +104,13 @@ void ALargeItemMaster::CalculateResources(TArray<FResourceStructure> InGivenReso
 		}
 		
 		float Result = (((BaseVar * RateVar) * ToolTypeVar) * ToolTierVar) * NewLocalDamage;
-
-		// Set Local Resource Quantity
+		
 		int32 LocalResourceQuantity = Result;
 		
 		if (LocalResourceQuantity > 0)
 		{
 			if (LocalResource.ToSoftObjectPath().IsValid())
 			{
-				// Load the item asset if the path is valid
 				UItemInfo* LoadedAsset = LocalResource.LoadSynchronous();
 				if (LoadedAsset)
 				{

@@ -8,9 +8,8 @@ AItemMaster::AItemMaster()
 {
 	bReplicates = true;
 
-	// Disable ticking by default
-	PrimaryActorTick.bCanEverTick = true; // Ensures the actor can tick if needed
-	PrimaryActorTick.bStartWithTickEnabled = false; // Disable tick at the start
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 }
 
 void AItemMaster::BeginPlay()

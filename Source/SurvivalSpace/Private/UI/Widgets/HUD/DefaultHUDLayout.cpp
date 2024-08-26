@@ -8,7 +8,6 @@
 
 void UDefaultHUDLayout::AddResource(UTexture2D* Icon, int32 Quantity, FText ItemName)
 {
-	// Create a new Inventory Slot Widget
 	if (ItemCollectedWidgetClass)
 	{
 		ItemCollectedWidget = CreateWidget<UItemCollected>(GetWorld(), ItemCollectedWidgetClass);
@@ -19,7 +18,7 @@ void UDefaultHUDLayout::AddResource(UTexture2D* Icon, int32 Quantity, FText Item
 			ItemCollectedWidget->ResourceQuantity = Quantity;
 			ItemCollectedWidget->ResourceName = ItemName;
 
-			ItemCollectedWidget->UpdateUI(); // Ensure UI is updated
+			ItemCollectedWidget->UpdateUI();
 
 			ResourcesCollected->AddChild(ItemCollectedWidget);
 		}
@@ -28,7 +27,6 @@ void UDefaultHUDLayout::AddResource(UTexture2D* Icon, int32 Quantity, FText Item
 
 void UDefaultHUDLayout::RemoveResource(UTexture2D* Icon, int32 Quantity, FText ItemName)
 {
-	// Create a new Inventory Slot Widget
 	if (ItemDestroyedWidgetClass)
 	{
 		ItemDestroyedWidget = CreateWidget<UItemCollected>(GetWorld(), ItemDestroyedWidgetClass);
@@ -39,7 +37,7 @@ void UDefaultHUDLayout::RemoveResource(UTexture2D* Icon, int32 Quantity, FText I
 			ItemDestroyedWidget->ResourceQuantity = Quantity;
 			ItemDestroyedWidget->ResourceName = ItemName;
 
-			ItemDestroyedWidget->UpdateUI(); // Ensure UI is updated
+			ItemDestroyedWidget->UpdateUI();
 
 			ResourcesCollected->AddChild(ItemDestroyedWidget);
 		}

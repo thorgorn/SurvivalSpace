@@ -9,11 +9,9 @@
 
 AEquippableToolMaster::AEquippableToolMaster()
 {
-	// Create the DefaultSceneRoot component and set it as the root
 	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	SetRootComponent(DefaultSceneRoot);
-
-	// Create the StaticMesh component and attach it to the DefaultSceneRoot
+	
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(DefaultSceneRoot);
 }
@@ -79,7 +77,7 @@ void AEquippableToolMaster::OverLapOnServer_Implementation(FRotator InRotator)
 
 void AEquippableToolMaster::OverLap(FRotator Rotation)
 {
-	FRotator LocalCameraRotation = Rotation;
+	//FRotator LocalCameraRotation = Rotation;
 
 	if (IsValid(CharRef))
 	{
@@ -93,7 +91,7 @@ void AEquippableToolMaster::OverLap(FRotator Rotation)
             	
 				float LocalInteractDistance = 200.0f;
 				FVector StartTrace = LocalCameraLocation;
-				FVector EndTrace = LocalCameraRotation.Vector() * LocalInteractDistance + LocalCameraLocation;
+				FVector EndTrace = Rotation.Vector() * LocalInteractDistance + LocalCameraLocation;
 
 				FHitResult HitResult;
 				FCollisionQueryParams CollisionParams;
@@ -115,7 +113,6 @@ void AEquippableToolMaster::OverLap(FRotator Rotation)
             	
 				if (bHit && HitResult.GetActor()->Implements<ULargeItemInterface>())
 				{
-					//HarvestFoliage(ItemDamage, HitResult.GetActor(), HitResult.ImpactPoint);
 					ILargeItemInterface* LargeItemInterface = Cast<ILargeItemInterface>(HitResult.GetActor());
 					if (LargeItemInterface)
 					{
@@ -126,14 +123,13 @@ void AEquippableToolMaster::OverLap(FRotator Rotation)
 						{
 							CharacterInterface->GetHitFXInfo(HitResult.ImpactPoint, ItemResourceType);
 							
-							// Add rumble effect here
-							APawn* PawnRef = Cast<APawn>(CharRef);
+							TObjectPtr<APawn> PawnRef = Cast<APawn>(CharRef);
+							
 							if (PawnRef)
 							{
-								APlayerController* PlayerController = Cast<APlayerController>(PawnRef->GetController());
+								TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(PawnRef->GetController());
 								if (PlayerController)
 								{
-									// Parameters: intensity, duration, flag for affecting large motors, flag for affecting small motors
 									PlayerController->PlayDynamicForceFeedback(0.5f, 0.3f, true, true, true, true);
 								}
 							}

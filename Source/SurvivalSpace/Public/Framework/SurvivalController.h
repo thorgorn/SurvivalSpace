@@ -28,7 +28,7 @@ class SURVIVALSPACE_API ASurvivalController : public APlayerController, public I
 public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Inventory")
-	bool InventoryShown = false;
+	bool bInventoryShown = false;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Crafting")
 	bool CraftingShown = false;
@@ -89,7 +89,7 @@ protected:
 	TSubclassOf<UMainUILayout> RootLayoutClass;
 	
 	UPROPERTY(BlueprintReadWrite)
-	bool ItemSelected;
+	bool bItemSelected;
 
 	UPROPERTY()
 	int32 SelectedItemIndex;
@@ -156,12 +156,10 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Client, Reliable, Category = "Controller Functions")
 	void UpdateSlotOnClient(EContainerType Container, int32 Index, FItemStructure ItemInfo);
-
-	UFUNCTION()
-	void GetInventoryWidget(EContainerType Container, int32 SlotIndex, UInventorySlot*& Widget);
-
-	UFUNCTION()
-	void GetCraftingItemWidget(int32 SlotIndex, UCraftingSlot*& Widget);
+	
+	void GetInventoryWidget(EContainerType Container, int32 SlotIndex, TObjectPtr<UInventorySlot>& Widget);
+	
+	void GetCraftingItemWidget(int32 SlotIndex, TObjectPtr<UCraftingSlot>& Widget);
 
 	UFUNCTION(BlueprintCallable, Client, Reliable, Category = "Controller Functions")
 	void UpdateCraftingSlotOnClient(int32 Index, FItemStructure ItemInfo);

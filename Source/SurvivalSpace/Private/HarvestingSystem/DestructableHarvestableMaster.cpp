@@ -10,8 +10,8 @@ ADestructableHarvestableMaster::ADestructableHarvestableMaster()
 	bReplicates = true;
 
 	// Disable ticking by default
-	PrimaryActorTick.bCanEverTick = true; // Ensures the actor can tick if needed
-	PrimaryActorTick.bStartWithTickEnabled = true; // Disable tick at the start
+	PrimaryActorTick.bCanEverTick = true; 
+	PrimaryActorTick.bStartWithTickEnabled = false;
 
 }
 

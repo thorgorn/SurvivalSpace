@@ -34,7 +34,9 @@ void ADestructableTreeMaster::BeginPlay()
 void ADestructableTreeMaster::AddFallForce(UCapsuleComponent* Capsule)
 {
 	FVector ForceAmount = Direction * Force;
+	
 	FName BoneName = NAME_None;
+	
 	Capsule->AddForce(ForceAmount, BoneName, true);
 }
 

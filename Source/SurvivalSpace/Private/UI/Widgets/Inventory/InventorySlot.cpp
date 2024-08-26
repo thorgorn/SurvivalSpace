@@ -39,6 +39,8 @@ void UInventorySlot::NativeConstruct()
     case EContainerType::Armor:
         ItemBGHotBar->SetVisibility(ESlateVisibility::Hidden);
         break;
+    case EContainerType::Crafting:
+        break;
     }
 
 }
@@ -49,7 +51,7 @@ void UInventorySlot::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
     if (bIsCraftingSlot)
     {
-        
+        // should delete this....
     }
     else
     {
@@ -73,20 +75,20 @@ void UInventorySlot::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
         case EContainerType::Armor:
             SizeBox_Input->SetVisibility(ESlateVisibility::Collapsed);
             break;
+        case EContainerType::Crafting:
+            break;
         }
     }
 }
 
 FReply UInventorySlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-
-
-    // Detect if the left mouse button is pressed and initiate a drag if it is.
+    
     FEventReply EventReply = UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 
     if (bIsCraftingSlot)
     {
-        
+        // should delete this check
     }
     else
     {
@@ -105,11 +107,10 @@ FReply UInventorySlot::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometr
     {
         if (bIsCraftingSlot)
         {
-        
+            // should delete this check
         }
         else
         {
-            // Detect drag if the left mouse button is pressed
             FEventReply EventReply = UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
             return EventReply.NativeReply;
         }
@@ -163,41 +164,35 @@ void UInventorySlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPo
 bool UInventorySlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
     UDragDropOperation* InOperation)
 {
-    // Cast the Operation to check if it implements our ItemDragInterface
     IItemDragInterface* ItemDragOperationInterface = Cast<IItemDragInterface>(InOperation);
     if (!ItemDragOperationInterface)
     {
         return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
     }
-
-    // Retrieve Item Drag Info
+    
     int32 SlotIndex;
     EContainerType FromContainer;
     EArmorType ArmorType;
     EItemType ItemType;
     ItemDragOperationInterface->GetItemDragInfo(SlotIndex, FromContainer, ArmorType, ItemType);
-
-    // Set local variables
+    
     int32 LocalSlotIndex = SlotIndex;
     EContainerType LocalFromContainer = FromContainer;
     EArmorType LocalArmorType = ArmorType;
     EItemType LocalItemType = ItemType;
-
-    // Get Player Character
+    
     ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
     if (!PlayerCharacter)
     {
         return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
     }
-
-    // Get the SurvivalCharacterInterface from the PlayerCharacter
+    
     ISurvivalCharacterInterface* SurvivalCharacterInterface = Cast<ISurvivalCharacterInterface>(PlayerCharacter);
     if (!SurvivalCharacterInterface)
     {
         return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
     }
-
-    // Call OnSlotDrop on the PlayerCharacter
+    
     SurvivalCharacterInterface->OnSlotDrop(ContainerType, LocalFromContainer, LocalSlotIndex, ItemIndex, LocalArmorType);
 
     return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
@@ -213,10 +208,8 @@ void UInventorySlot::NativeOnPressed()
 
         if (CommonInputSubsystem)
         {
-            // Get the current input type
             ECommonInputType InputType = CommonInputSubsystem->GetCurrentInputType();
-
-            // Check if the input type is GamePad
+            
             if (InputType == ECommonInputType::Gamepad)
             {
                 ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
@@ -234,6 +227,8 @@ void UInventorySlot::NativeOnPressed()
                 case EContainerType::Storage:
                     break;
                 case EContainerType::Armor:
+                    break;
+                case EContainerType::Crafting:
                     break;
                 }
             
@@ -275,29 +270,23 @@ FReply UInventorySlot::NativeOnFocusReceived(const FGeometry& InGeometry, const 
 
 FReply UInventorySlot::NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
-    // Check if the pressed key is Gamepad Face Button Left
     if (InKeyEvent.GetKey() == EKeys::Gamepad_FaceButton_Left)
     {
-        // Cast the owning player to the controller interface
         IControllerInterface* ControllerInterface = Cast<IControllerInterface>(GetOwningPlayer());
 
         if (IsValid(ItemInfoWidget))
         {
-            // Remove ItemInfoWidget from parent if it's valid
             ItemInfoWidget->RemoveFromParent();
         }
-
-        // Call SetSelectedItem regardless of whether ItemInfoWidget was valid
+        
         if (ControllerInterface)
         {
             ControllerInterface->SetSelectedItem(ContainerType, ItemIndex, bHasItemInSlot, EArmorType::Helmet);
         }
-
-        // Return that the event was handled
+        
         return FReply::Handled();
     }
-
-    // Call the parent class's implementation if the event was not handled
+    
     return Super::NativeOnPreviewKeyDown(InGeometry, InKeyEvent);
 }
 
@@ -340,6 +329,8 @@ void UInventorySlot::NativeOnHovered()
         break;
     case EContainerType::Armor:
         break;
+    case EContainerType::Crafting:
+        break;
     }
 }
 
@@ -353,13 +344,10 @@ void UInventorySlot::NativeOnUnhovered()
 
 void UInventorySlot::UpdateSlot(FItemStructure ItemInfo)
 {
-    // Update ItemInfoData
     ItemInfoData = ItemInfo;
-
-    // Update bHasItemInSlot based on whether ItemInfo is valid (assuming it is valid if ItemID is not zero)
+    
     bHasItemInSlot = ItemInfo.ItemID != 0;
-
-    // Load ItemAsset asynchronously
+    
     if (ItemInfo.ItemAsset.ToSoftObjectPath().IsValid())
     {
         FStreamableManager& AssetLoader = UAssetManager::GetStreamableManager();
@@ -380,7 +368,6 @@ void UInventorySlot::OnItemAssetLoaded(FSoftObjectPath AssetPath, FItemStructure
         ItemAssetInfo = Cast<UItemInfo>(LoadedAsset);
         if (ItemAssetInfo)
         {
-            // Successfully loaded item asset
             double ItemWeight = ItemInfo.ItemQuantity * ItemAssetInfo->ItemWeight;
             FText NewWeightText = UKismetTextLibrary::Conv_DoubleToText(ItemWeight, HalfToEven, false, true, 1, 324, 1, 3);
             if (WeightText)
@@ -529,10 +516,8 @@ void UInventorySlot::DisplayItemInfoWidget()
 
         if (CommonInputSubsystem)
         {
-            // Get the current input type
             ECommonInputType InputType = CommonInputSubsystem->GetCurrentInputType();
-
-            // Check if the input type is GamePad
+            
             if (InputType == ECommonInputType::Gamepad)
             {
                 bAddedToFocusPath = true;
@@ -554,6 +539,8 @@ void UInventorySlot::DisplayItemInfoWidgetDelay()
     case EContainerType::Storage:
         break;
     case EContainerType::Armor:
+        break;
+    case EContainerType::Crafting:
         break;
     }
 }
@@ -616,10 +603,8 @@ void UInventorySlot::GetItemToolTip()
 
         if (CommonInputSubsystem)
         {
-            // Get the current input type
             ECommonInputType InputType = CommonInputSubsystem->GetCurrentInputType();
-
-            // Check if the input type is GamePad
+            
             if (InputType == ECommonInputType::MouseAndKeyboard)
             {
                 if (bHasItemInSlot)

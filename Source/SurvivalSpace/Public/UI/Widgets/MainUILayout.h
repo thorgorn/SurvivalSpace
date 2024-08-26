@@ -34,13 +34,13 @@ public:
 	// WIDGET PROPERTIES & VARIABLES
 	//--------------------------------------------------------------------------------------------
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget), Category = "Stacks")
-	TObjectPtr<UActivatableWidgetStackCustom> GameHUDStack;
+	TObjectPtr<UCommonActivatableWidgetStack> GameHUDStack;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget), Category = "Stacks")
-	TObjectPtr<UActivatableWidgetStackCustom> GameInventoryStack;
+	TObjectPtr<UCommonActivatableWidgetStack> GameInventoryStack;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget), Category = "Stacks")
-	TObjectPtr<UActivatableWidgetStackCustom> GameMenuStack;
+	TObjectPtr<UCommonActivatableWidgetStack> GameMenuStack;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PushWidgets")
 	TSubclassOf<UDefaultHUDLayout> DefaultHUDLayoutClass;
