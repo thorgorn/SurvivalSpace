@@ -134,27 +134,24 @@ void UCraftingContainer::AddSlots(ECraftingType InCraftingType, TArray<FItem> It
 
 void UCraftingContainer::AddSlotsToGrid(int32 Index, UCraftingRecipeSlot* InSlot)
 {
-    //int32 LocalSlotIndex = Index;
-    //UCraftingRecipeSlot* LocalCraftingSlot = InSlot;
-
-    UUniformGridSlot* GridSlot = Grid->AddChildToUniformGrid(InSlot);
-    if (!GridSlot)
+    if (IsValid(InSlot))
     {
-        return;
-    }
-    
-    int32 SlotsPerRowValue = SlotsPerRow;
-    
-    double LocalSlotIndexAsDouble = UKismetMathLibrary::Conv_IntToDouble(Index);
-    double SlotsPerRowAsDouble = UKismetMathLibrary::Conv_IntToDouble(SlotsPerRowValue);
+        if (TObjectPtr<UUniformGridSlot> GridSlot = Grid->AddChildToUniformGrid(InSlot); IsValid(GridSlot))
+        {
+            int32 SlotsPerRowValue = SlotsPerRow;
+	
+            double LocalSlotIndexAsDouble = UKismetMathLibrary::Conv_IntToDouble(Index);
+            double SlotsPerRowAsDouble = UKismetMathLibrary::Conv_IntToDouble(SlotsPerRowValue);
 
-    double Remainder;
-    int32 ReturnValue = UKismetMathLibrary::FMod(LocalSlotIndexAsDouble, SlotsPerRowAsDouble, Remainder);
-    int32 Column = UKismetMathLibrary::FTrunc(Remainder);
-    int32 Row = UKismetMathLibrary::FTrunc(ReturnValue);
-    
-    GridSlot->SetRow(Row);
-    GridSlot->SetColumn(Column);
+            double Remainder;
+            int32 ReturnValue = UKismetMathLibrary::FMod(LocalSlotIndexAsDouble, SlotsPerRowAsDouble, Remainder);
+            int32 Column = UKismetMathLibrary::FTrunc(Remainder);
+            int32 Row = UKismetMathLibrary::FTrunc(ReturnValue);
+	
+            GridSlot->SetRow(Row);
+            GridSlot->SetColumn(Column);
+        }
+    }
 }
 
 void UCraftingContainer::CheckCraftableItem(TArray<FItemRecipes> RequiredItems, TArray<FItem> ItemsArray,

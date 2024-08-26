@@ -27,56 +27,44 @@ void UItemContainerGrid::NativeConstruct()
 
 void UItemContainerGrid::AddSlots(const int32 Amount)
 {
-	
-	//int32 LocalLoopIndex = Amount;
-	int32 FirstIndex = 1;
+	if (!InventorySlotClass) return;
 
-	for (int32 Index = FirstIndex; Index <= Amount; ++Index)
+	for (int32 Index = 0; Index < Amount; ++Index)
 	{
-		if (InventorySlotClass)
+		InventorySlot = CreateWidget<UInventorySlot>(GetWorld(), InventorySlotClass);
+		if (InventorySlot) 
 		{
-			InventorySlot = CreateWidget<UInventorySlot>(GetWorld(), InventorySlotClass);
+			InventorySlot->ContainerType = ContainerType;
+			InventorySlot->Parent = this;
+			InventorySlot->bIsCraftingSlot = bIsCraftingSlot;
 			
-			if (InventorySlot)
-			{
-				InventorySlot->ContainerType = ContainerType;
-				InventorySlot->Parent = this;
-				InventorySlot->bIsCraftingSlot = bIsCraftingSlot;
-				Slots.Add(InventorySlot);
-				InventorySlot->ItemIndex = Slots.Num() - 1;
+			InventorySlot->ItemIndex = Slots.Emplace(InventorySlot);
 
-				AddSlotToGrid(InventorySlot->ItemIndex, InventorySlot);
-			}
+			AddSlotToGrid(InventorySlot->ItemIndex, InventorySlot);
 		}
 	}
 }
 
+
 void UItemContainerGrid::AddSlotToGrid(int32 Index, UInventorySlot* ItemSlot)
 {
-	if (!Grid || !ItemSlot)
+		
+	if (IsValid(ItemSlot))
 	{
-		return;
-	}
+		if (TObjectPtr<UUniformGridSlot> GridSlot = Grid->AddChildToUniformGrid(ItemSlot); IsValid(GridSlot))
+		{
+			int32 SlotsPerRowValue = SlotsPerRow;
 	
-	//int32 LocalSlotIndex = Index;
-	TObjectPtr<UInventorySlot> LocalSlot = ItemSlot;
-	
-	UUniformGridSlot* GridSlot = Grid->AddChildToUniformGrid(LocalSlot);
-	if (!GridSlot)
-	{
-		return;
-	}
-	
-	int32 SlotsPerRowValue = SlotsPerRow;
-	
-	double LocalSlotIndexAsDouble = UKismetMathLibrary::Conv_IntToDouble(Index);
-	double SlotsPerRowAsDouble = UKismetMathLibrary::Conv_IntToDouble(SlotsPerRowValue);
+			double LocalSlotIndexAsDouble = UKismetMathLibrary::Conv_IntToDouble(Index);
+			double SlotsPerRowAsDouble = UKismetMathLibrary::Conv_IntToDouble(SlotsPerRowValue);
 
-	double Remainder;
-	int32 ReturnValue = UKismetMathLibrary::FMod(LocalSlotIndexAsDouble, SlotsPerRowAsDouble, Remainder);
-	int32 Column = UKismetMathLibrary::FTrunc(Remainder);
-	int32 Row = UKismetMathLibrary::FTrunc(ReturnValue);
+			double Remainder;
+			int32 ReturnValue = UKismetMathLibrary::FMod(LocalSlotIndexAsDouble, SlotsPerRowAsDouble, Remainder);
+			int32 Column = UKismetMathLibrary::FTrunc(Remainder);
+			int32 Row = UKismetMathLibrary::FTrunc(ReturnValue);
 	
-	GridSlot->SetRow(Row);
-	GridSlot->SetColumn(Column);
+			GridSlot->SetRow(Row);
+			GridSlot->SetColumn(Column);
+		}
+	}
 }
