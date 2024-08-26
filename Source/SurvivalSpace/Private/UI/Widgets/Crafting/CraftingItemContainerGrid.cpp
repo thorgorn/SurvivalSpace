@@ -28,6 +28,11 @@ void UCraftingItemContainerGrid::NativeConstruct()
 	
 }
 
+TArray<UCraftingSlot*> UCraftingItemContainerGrid::GetSlots() const
+{
+	return Slots;
+}
+
 void UCraftingItemContainerGrid::AddSlots(int32 Amount)
 {
 	if (!CraftingSlotClass) return;

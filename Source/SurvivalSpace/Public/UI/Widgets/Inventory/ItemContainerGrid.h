@@ -33,6 +33,11 @@ public:
 	void AddSlotToGrid(int32 Index, UInventorySlot* ItemSlot);
 
 	//--------------------------------------------------------------------------------------------
+	// ITEM CONTAINER GRID GETTERS
+	//--------------------------------------------------------------------------------------------
+	UFUNCTION(BlueprintPure, Category = "Data")
+	TArray<UInventorySlot*> GetSlots() const;
+	//--------------------------------------------------------------------------------------------
 	// ITEM CONTAINER GRID PROPERTIES & VARIABLES
 	//--------------------------------------------------------------------------------------------
 
@@ -56,10 +61,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "ContainerData")
 	TObjectPtr<UInventorySlot> InventorySlot;
-
-	UPROPERTY(BlueprintReadWrite, Category = "ContainerData")
-	TArray<TObjectPtr<UInventorySlot>> Slots;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ContainerData")
 	int32 ItemIndex;
 
@@ -71,5 +73,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ContainerData")
 	bool bIsCraftingSlot = false;
+
+private:
+
+	//--------------------------------------------------------------------------------------------
+	// ITEM CONTAINER GRID PRIVATE VARIABLES
+	//--------------------------------------------------------------------------------------------
+
+	UPROPERTY(BlueprintReadWrite, Category = "ContainerData", meta=(AllowPrivateAccess))
+	TArray<TObjectPtr<UInventorySlot>> Slots;
 	
 };

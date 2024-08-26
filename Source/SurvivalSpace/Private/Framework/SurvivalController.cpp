@@ -142,7 +142,7 @@ void ASurvivalController::UpdateCraftingUI_Implementation()
 			
 			for (int32 InventoryIndex = 0; InventoryIndex < CharRef->PlayerInventory->GetItems().Num(); ++InventoryIndex)
 			{
-				UItemInfo* LoadedAsset = CharRef->PlayerInventory->GetItems()[InventoryIndex].ItemAsset.LoadSynchronous();
+				TSoftObjectPtr<UItemInfo> LoadedAsset = CharRef->PlayerInventory->GetItems()[InventoryIndex].ItemAsset.LoadSynchronous();
 
 				if (LoadedAsset && LoadedAsset->ItemType == EItemType::Resource)
 				{
@@ -158,7 +158,7 @@ void ASurvivalController::UpdateCraftingUI_Implementation()
 			
 			for (int32 HotbarIndex = 0; HotbarIndex < CharRef->PlayerHotBar->GetItems().Num(); ++HotbarIndex)
 			{
-				UItemInfo* LoadedAsset = CharRef->PlayerHotBar->GetItems()[HotbarIndex].ItemAsset.LoadSynchronous();
+				TSoftObjectPtr<UItemInfo> LoadedAsset = CharRef->PlayerHotBar->GetItems()[HotbarIndex].ItemAsset.LoadSynchronous();
 
 				if (LoadedAsset && LoadedAsset->ItemType == EItemType::Resource)
 				{
@@ -341,9 +341,9 @@ void ASurvivalController::CraftWidgetOnClient_Implementation(ECraftingType Craft
 }
 
 
-void ASurvivalController::GetInventoryWidget(EContainerType Container, int32 SlotIndex, TObjectPtr<UInventorySlot>& Widget)
+void ASurvivalController::GetInventoryWidget(EContainerType Container, int32 SlotIndex, TObjectPtr<UInventorySlot>& ItemSlot)
 {
-	Widget = nullptr;
+	ItemSlot = nullptr;
 
 	if (!RootLayoutClass)
 	{
@@ -358,7 +358,7 @@ void ASurvivalController::GetInventoryWidget(EContainerType Container, int32 Slo
 			return;
 		}
 
-		Widget = RootLayout->GameInventoryLayout->InventoryWidget->ItemContainerGrid->Slots[SlotIndex];
+		ItemSlot = RootLayout->GameInventoryLayout->InventoryWidget->ItemContainerGrid->GetSlots()[SlotIndex];
 		break;
 
 	case EContainerType::HotBar:
@@ -368,11 +368,11 @@ void ASurvivalController::GetInventoryWidget(EContainerType Container, int32 Slo
 		}
 		if (bInventoryShown)
 		{
-			Widget = RootLayout->GameInventoryLayout->HotBarWidget->ItemContainerGrid->Slots[SlotIndex];
+			ItemSlot = RootLayout->GameInventoryLayout->HotBarWidget->ItemContainerGrid->GetSlots()[SlotIndex];
 		}
 		else
 		{
-			Widget = RootLayout->DefaultHUDLayout->HotBarWidget->ItemContainerGrid->Slots[SlotIndex];
+			ItemSlot = RootLayout->DefaultHUDLayout->HotBarWidget->ItemContainerGrid->GetSlots()[SlotIndex];
 		}
 		break;
 	case EContainerType::Storage:
@@ -386,16 +386,16 @@ void ASurvivalController::GetInventoryWidget(EContainerType Container, int32 Slo
 	}
 }
 
-void ASurvivalController::GetCraftingItemWidget(int32 SlotIndex, TObjectPtr<UCraftingSlot>& Widget)
+void ASurvivalController::GetCraftingItemWidget(int32 SlotIndex, TObjectPtr<UCraftingSlot>& CraftingSlot)
 {
-	Widget = nullptr;
+	CraftingSlot = nullptr;
 
 	if (!RootLayoutClass)
 	{
 		return;
 	}
 
-	Widget = RootLayout->GameInventoryLayout->CraftingWidget->CraftingItemContainerGrid->Slots[SlotIndex];
+	CraftingSlot = RootLayout->GameInventoryLayout->CraftingWidget->CraftingItemContainerGrid->GetSlots()[SlotIndex];
 }
 
 void ASurvivalController::ResetCraftSlotOnClient_Implementation(EContainerType Container, int32 Index)
@@ -412,19 +412,19 @@ void ASurvivalController::ResetCraftSlotOnClient_Implementation(EContainerType C
 
 void ASurvivalController::UpdateCraftingSlotOnClient_Implementation(int32 Index, FItemStructure ItemInfo)
 {
-	TObjectPtr<UCraftingSlot> Widget = nullptr;
-	GetCraftingItemWidget(Index, Widget);
+	TObjectPtr<UCraftingSlot> CraftingSlot = nullptr;
+	GetCraftingItemWidget(Index, CraftingSlot);
 
-	if (Widget)
+	if (CraftingSlot)
 	{
-		UItemInfo* LoadedAsset = ItemInfo.ItemAsset.LoadSynchronous();
+		TSoftObjectPtr<UItemInfo> LoadedAsset = ItemInfo.ItemAsset.LoadSynchronous();
 		if (LoadedAsset && LoadedAsset->ItemType == EItemType::Resource)
 		{
-			Widget->UpdateSlot(ItemInfo);
+			CraftingSlot->UpdateSlot(ItemInfo);
 		}
 		else
 		{
-			Widget->ResetSlot();
+			CraftingSlot->ResetSlot();
 		}
 	}
 }
@@ -432,13 +432,13 @@ void ASurvivalController::UpdateCraftingSlotOnClient_Implementation(int32 Index,
 
 void ASurvivalController::ResetOnClient_Implementation(EContainerType Container, int32 Index)
 {
-	TObjectPtr<UInventorySlot> Widget = nullptr;
+	TObjectPtr<UInventorySlot> ItemSlot = nullptr;
 
-	GetInventoryWidget(Container, Index, Widget);
+	GetInventoryWidget(Container, Index, ItemSlot);
 
-	if (Widget)
+	if (ItemSlot)
 	{
-		Widget->ResetSlot();
+		ItemSlot->ResetSlot();
 	}
 }
 

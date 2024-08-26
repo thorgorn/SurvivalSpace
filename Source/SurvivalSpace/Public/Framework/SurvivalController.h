@@ -157,9 +157,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Client, Reliable, Category = "Controller Functions")
 	void UpdateSlotOnClient(EContainerType Container, int32 Index, FItemStructure ItemInfo);
 	
-	void GetInventoryWidget(EContainerType Container, int32 SlotIndex, TObjectPtr<UInventorySlot>& Widget);
+	void GetInventoryWidget(EContainerType Container, int32 SlotIndex, TObjectPtr<UInventorySlot>& ItemSlot);
 	
-	void GetCraftingItemWidget(int32 SlotIndex, TObjectPtr<UCraftingSlot>& Widget);
+	void GetCraftingItemWidget(int32 SlotIndex, TObjectPtr<UCraftingSlot>& CraftingSlot);
 
 	UFUNCTION(BlueprintCallable, Client, Reliable, Category = "Controller Functions")
 	void UpdateCraftingSlotOnClient(int32 Index, FItemStructure ItemInfo);

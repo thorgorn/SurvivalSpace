@@ -32,7 +32,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void AddSlotToGrid(int32 Index, UCraftingSlot* CraftingItemSlot);
-	
+
+	//--------------------------------------------------------------------------------------------
+	// CRAFTING ITEM CONTAINER GRID GETTERS
+	//--------------------------------------------------------------------------------------------
+	UFUNCTION(BlueprintPure, Category = "Data")
+	TArray<UCraftingSlot*> GetSlots() const;
 	//--------------------------------------------------------------------------------------------
 	// CRAFTING ITEM CONTAINER GRID PROPERTIES & VARIABLES
 	//--------------------------------------------------------------------------------------------
@@ -57,10 +62,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "ContainerData")
 	TObjectPtr<UCraftingSlot> CraftingSlot;
-
-	UPROPERTY(BlueprintReadWrite, Category = "ContainerData")
-	TArray<TObjectPtr<UCraftingSlot>> Slots;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ContainerData")
 	int32 ItemIndex;
 
@@ -69,5 +71,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ContainerData")
 	bool bShowScrollBar = true;
+
+private:
+
+	//--------------------------------------------------------------------------------------------
+	// CRAFTING ITEM CONTAINER GRID PRIVATE VARIABLES
+	//--------------------------------------------------------------------------------------------
+
+	UPROPERTY(BlueprintReadWrite, Category = "ContainerData", meta =(AllowPrivateAccess))
+	TArray<TObjectPtr<UCraftingSlot>> Slots;
 	
 };

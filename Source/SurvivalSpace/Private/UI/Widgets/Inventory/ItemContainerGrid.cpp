@@ -25,6 +25,11 @@ void UItemContainerGrid::NativeConstruct()
 	
 }
 
+TArray<UInventorySlot*> UItemContainerGrid::GetSlots() const
+{
+	return Slots;
+}
+
 void UItemContainerGrid::AddSlots(const int32 Amount)
 {
 	if (!InventorySlotClass) return;
