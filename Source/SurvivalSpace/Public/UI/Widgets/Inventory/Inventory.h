@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Inventory.generated.h"
 
+class UTextBlock;
 class UItemContainerGrid;
 /**
  * 
@@ -18,10 +19,17 @@ class SURVIVALSPACE_API UInventory : public UUserWidget
 public:
 
 	//--------------------------------------------------------------------------------------------
+	// INVENTORY WIDGET FUNCTIONS
+	//--------------------------------------------------------------------------------------------
+		virtual void NativeConstruct() override;
+	//--------------------------------------------------------------------------------------------
 	// INVENTORY WIDGET PROPERTIES & VARIABLES
 	//--------------------------------------------------------------------------------------------
 
 	UPROPERTY(BlueprintReadWrite, Category = "Widgets", meta=(BindWidget))
 	TObjectPtr<UItemContainerGrid> ItemContainerGrid;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Data")
+	TObjectPtr<UTextBlock> SlotText;
 	
 };
