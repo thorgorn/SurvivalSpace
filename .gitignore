@@ -1,0 +1,23 @@
+# directories
+Intermediate/
+DerivedDataCache/
+Binaries/
+Saved/
+Script/
+Plugins/
+Resources/
+Build/
+Content/*
+Content/_Main/UI/Common/Prompts
+.idea/
+.vs/
+.tmp.driveupload/
+
+# exceptions
+
+Content/_Main
+
+
+# file types
+*.sln
+*.vsconfig
