@@ -11,44 +11,64 @@ struct FItemStructure
 {
 	GENERATED_USTRUCT_BODY()
 
+	FItemStructure() = default;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 ItemID;
+	int32 ItemID = 0;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 ItemQuantity;
+	int32 ItemQuantity = 0;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 CurrentHP = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 MaxHP = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 CurrentAmmo = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 MaxAmmo = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 StackSize = 0;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSoftObjectPtr<UItemInfo> ItemAsset;
+};
+
+USTRUCT(Blueprintable)
+struct FItem
+{
+	GENERATED_BODY()
+
+	FItem() : ItemID(0), ItemQuantity(0)
+	{
+	}
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 CurrentHP;
+	int32 ItemID;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 MaxHP;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 CurrentAmmo;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 MaxAmmo;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 StackSize;
+	int32 ItemQuantity;
 };
 
 USTRUCT(Blueprintable)
 struct FResourceStructure
 {
 	GENERATED_USTRUCT_BODY()
+
+	FResourceStructure() = default;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSoftObjectPtr<UItemInfo> Resource;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 Quantity;
+	int32 Quantity = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	EHarvestingToolType PreferredTool;
+	EHarvestingToolType PreferredTool = EHarvestingToolType::Hatchet;
 };
 
 USTRUCT(Blueprintable)
@@ -56,8 +76,10 @@ struct FResourceEffects
 {
 	GENERATED_BODY()
 
+	FResourceEffects() = default;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	EResourceType ResourceType; 
+	EResourceType ResourceType = EResourceType::Wood; 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UParticleSystem> VFX;
@@ -71,11 +93,13 @@ struct FItemRecipes
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 ItemID;
+	FItemRecipes() = default;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 ItemQuantity;
+	int32 ItemID = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 ItemQuantity = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSoftObjectPtr<UTexture2D> ItemIcon;
@@ -89,20 +113,22 @@ struct FItemRecipeInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 ItemID;
+	FItemRecipeInfo() = default;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TSoftObjectPtr<UTexture2D> ItemIcon;
+	int32 ItemID = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 CurrentQuantity = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 NeededQuantity = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FText ItemName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 CurrentQuantity;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 NeededQuantity;
+	TSoftObjectPtr<UTexture2D> ItemIcon;
 
 };
 
@@ -111,19 +137,8 @@ struct FEquippableMontages
 {
 	GENERATED_BODY()
 
+	FEquippableMontages() = default;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UAnimMontage> AttackMontage;
-};
-
-USTRUCT(Blueprintable)
-struct FItem
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 ItemID;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32 ItemQuantity;
-	
 };
