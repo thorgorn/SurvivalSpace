@@ -32,7 +32,7 @@ void UItemsContainerMaster::BeginPlay()
 
 void UItemsContainerMaster::TransferItem(UItemsContainerMaster* ToComponent, int32 ToIndex, int32 IndexToTransfer)
 {
-	if (!ToComponent || IsSlotEmpty(IndexToTransfer) || 
+	if (!ToComponent || GetIsSlotEmpty(IndexToTransfer) || 
 		(ToIndex == IndexToTransfer && ToComponent == this))
 	{
 		return;
@@ -124,7 +124,7 @@ void UItemsContainerMaster::HandleSlotDrop(UItemsContainerMaster* FromContainer,
 
 bool UItemsContainerMaster::AddItemToIndex(const FItemStructure& ItemInfo, int32 ToItemIndex, int32 FromItemIndex)
 {
-	if (IsSlotEmpty(ToItemIndex))
+	if (GetIsSlotEmpty(ToItemIndex))
 	{
 		if (Items.IsValidIndex(ToItemIndex))
 		{
@@ -141,7 +141,7 @@ bool UItemsContainerMaster::AddItemToIndex(const FItemStructure& ItemInfo, int32
 }
 
 
-bool UItemsContainerMaster::IsSlotEmpty(const int32 SlotIndex)
+bool UItemsContainerMaster::GetIsSlotEmpty(const int32 SlotIndex)
 {
 	if (Items[SlotIndex].ItemID == 0) return true;
 		
@@ -165,9 +165,9 @@ void UItemsContainerMaster::TransferItemHotKey(UItemsContainerMaster* FromContai
 	FromContainer->RemoveItemAtIndex(FromIndex);
 }
 
-TArray<FItem> UItemsContainerMaster::GetItemQuantities()
+TArray<FSimpleItemStructure> UItemsContainerMaster::GetItemQuantities()
 {
-	TArray<FItem> LocalItemArray;
+	TArray<FSimpleItemStructure> LocalItemArray;
 
 	bool bFoundItem = false;
 	
@@ -192,7 +192,7 @@ TArray<FItem> UItemsContainerMaster::GetItemQuantities()
 
 			else
 			{
-				FItem FoundItems = FItem();
+				FSimpleItemStructure FoundItems = FSimpleItemStructure();
 				FoundItems.ItemID = Items[i].ItemID;
 				FoundItems.ItemQuantity = Items[i].ItemQuantity;
 				

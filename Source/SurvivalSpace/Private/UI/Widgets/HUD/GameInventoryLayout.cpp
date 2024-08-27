@@ -41,7 +41,7 @@ void UGameInventoryLayout::InventoryButtonClicked()
 	WidgetSwitcher->SetActiveWidgetIndex(0);
 }
 
-void UGameInventoryLayout::UpdateCraftWidget(ECraftingType CraftingType, TArray<FItem> ItemArray)
+void UGameInventoryLayout::UpdateCraftWidget(ECraftingType CraftingType, TArray<FSimpleItemStructure> ItemArray)
 {
 	switch (CraftingType) {
 	case ECraftingType::PlayerInventory:

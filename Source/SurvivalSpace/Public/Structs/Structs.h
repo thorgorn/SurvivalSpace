@@ -39,13 +39,11 @@ struct FItemStructure
 };
 
 USTRUCT(Blueprintable)
-struct FItem
+struct FSimpleItemStructure
 {
 	GENERATED_BODY()
-
-	FItem() : ItemID(0), ItemQuantity(0)
-	{
-	}
+	
+	FSimpleItemStructure() : ItemID(0), ItemQuantity(0) {}
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int32 ItemID;
@@ -53,6 +51,7 @@ struct FItem
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int32 ItemQuantity;
 };
+
 
 USTRUCT(Blueprintable)
 struct FResourceStructure

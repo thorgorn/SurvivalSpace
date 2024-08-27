@@ -41,7 +41,7 @@ public:
 	void InventoryButtonClicked();
 
 	UFUNCTION(BlueprintCallable, Category = "ButtonFunctions")
-	void UpdateCraftWidget(ECraftingType CraftingType, TArray<FItem> ItemArray);
+	void UpdateCraftWidget(ECraftingType CraftingType, TArray<FSimpleItemStructure> ItemArray);
 	
 	//--------------------------------------------------------------------------------------------
 	// BUTTON PROPERTIES & VARIABLES

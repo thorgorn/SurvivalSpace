@@ -67,7 +67,7 @@ protected:
 	
 	virtual void SetSelectedItem(EContainerType ContainerType, int32 SelectedIndex, bool ItemInFirstSlot, EArmorType ArmorType) override;
 
-	virtual void SetupCraftableItems(ECraftingType CraftingType, TArray<FItem> ItemArray) override;
+	virtual void SetupCraftableItems(ECraftingType CraftingType, TArray<FSimpleItemStructure> ItemArray) override;
 	
 
 	//--------------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ protected:
 	void UpdateCraftingUI();
 
 	UFUNCTION(BlueprintCallable, Client, Unreliable, Category = "ControllerFunctions")
-	void CraftWidgetOnClient(ECraftingType CraftingType, const TArray<FItem>& ItemsArray) const;
+	void CraftWidgetOnClient(ECraftingType CraftingType, const TArray<FSimpleItemStructure>& ItemsArray) const;
 
 	
 	

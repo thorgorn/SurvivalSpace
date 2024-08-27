@@ -22,7 +22,7 @@ void UCraftingContainer::InitializeSlots()
 	}
 }
 
-void UCraftingContainer::UpdateSlots(ECraftingType ItemCraftingType, TArray<FItem> ItemArray)
+void UCraftingContainer::UpdateSlots(ECraftingType ItemCraftingType, TArray<FSimpleItemStructure> ItemArray)
 {
 	CraftingType = ItemCraftingType;
 
@@ -35,9 +35,9 @@ void UCraftingContainer::UpdateSlots(ECraftingType ItemCraftingType, TArray<FIte
 }
 
 
-void UCraftingContainer::AddSlots(ECraftingType InCraftingType, TArray<FItem> ItemArray, bool bAdminMode)
+void UCraftingContainer::AddSlots(ECraftingType InCraftingType, TArray<FSimpleItemStructure> ItemArray, bool bAdminMode)
 {
-    TArray<FItem> LocalItemArray = ItemArray;
+    TArray<FSimpleItemStructure> LocalItemArray = ItemArray;
     FName PathName;
     
     switch (InCraftingType)
@@ -154,11 +154,11 @@ void UCraftingContainer::AddSlotsToGrid(int32 Index, UCraftingRecipeSlot* InSlot
     }
 }
 
-void UCraftingContainer::CheckCraftableItem(TArray<FItemRecipes> RequiredItems, TArray<FItem> ItemsArray,
+void UCraftingContainer::CheckCraftableItem(TArray<FItemRecipes> RequiredItems, TArray<FSimpleItemStructure> ItemsArray,
     bool& bCanCraft, TArray<FItemRecipeInfo>& LocalItems)
 {
     TArray<FItemRecipes> LocalRequiredItems = RequiredItems;
-    TArray<FItem> LocalItemsArray = ItemsArray;
+    TArray<FSimpleItemStructure> LocalItemsArray = ItemsArray;
     TArray<FItemRecipeInfo> LocalItemsInInventory;
 
     bool bDoesNotContainItems = false;

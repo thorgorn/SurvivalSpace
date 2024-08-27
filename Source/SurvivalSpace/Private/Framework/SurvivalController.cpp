@@ -118,7 +118,7 @@ void ASurvivalController::SetSelectedItem(EContainerType ContainerType, int32 Se
 	}
 }
 
-void ASurvivalController::SetupCraftableItems(ECraftingType CraftingType, TArray<FItem> ItemArray)
+void ASurvivalController::SetupCraftableItems(ECraftingType CraftingType, TArray<FSimpleItemStructure> ItemArray)
 {
 	CraftWidgetOnClient(CraftingType, ItemArray);
 }
@@ -336,7 +336,7 @@ void ASurvivalController::UpdateSlotOnClient_Implementation(EContainerType Conta
 	}
 }
 
-void ASurvivalController::CraftWidgetOnClient_Implementation(ECraftingType CraftingType, const TArray<FItem>& ItemsArray) const
+void ASurvivalController::CraftWidgetOnClient_Implementation(ECraftingType CraftingType, const TArray<FSimpleItemStructure>& ItemsArray) const
 {
 	RootLayout->GameInventoryLayout->UpdateCraftWidget(CraftingType, ItemsArray);
 }

@@ -29,16 +29,16 @@ public:
 	void InitializeSlots();
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateSlots(ECraftingType ItemCraftingType, TArray<FItem> ItemArray);
+	void UpdateSlots(ECraftingType ItemCraftingType, TArray<FSimpleItemStructure> ItemArray);
 
 	UFUNCTION(BlueprintCallable)
-	void AddSlots(ECraftingType InCraftingType, TArray<FItem> ItemArray, bool bAdminMode);
+	void AddSlots(ECraftingType InCraftingType, TArray<FSimpleItemStructure> ItemArray, bool bAdminMode);
 	
 	UFUNCTION(BlueprintCallable)
 	void AddSlotsToGrid(int32 Index, UCraftingRecipeSlot* InSlot);
 
 	UFUNCTION(BlueprintCallable, Category = "CraftingContainerFunctions")
-	void CheckCraftableItem(TArray<FItemRecipes> RequiredItems, TArray<FItem> ItemsArray, bool& bCanCraft, TArray<FItemRecipeInfo>& LocalItems);
+	void CheckCraftableItem(TArray<FItemRecipes> RequiredItems, TArray<FSimpleItemStructure> ItemsArray, bool& bCanCraft, TArray<FItemRecipeInfo>& LocalItems);
 	//--------------------------------------------------------------------------------------------
 	// CRAFTING CONTAINER GRID PROPERTIES
 	//--------------------------------------------------------------------------------------------

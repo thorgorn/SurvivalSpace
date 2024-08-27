@@ -49,7 +49,7 @@ void IControllerInterface::UpdateCraftResourceUI()
 {
 }
 
-void IControllerInterface::SetupCraftableItems(ECraftingType CraftingType, TArray<FItem> ItemArray)
+void IControllerInterface::SetupCraftableItems(ECraftingType CraftingType, TArray<FSimpleItemStructure> ItemArray)
 {
 }
 

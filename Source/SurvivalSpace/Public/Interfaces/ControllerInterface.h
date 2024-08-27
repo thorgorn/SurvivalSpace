@@ -60,7 +60,7 @@ public:
 	virtual void UpdateCraftResourceUI();
 
 	UFUNCTION(Blueprintable)
-	virtual void SetupCraftableItems(ECraftingType CraftingType, TArray<FItem> ItemArray);
+	virtual void SetupCraftableItems(ECraftingType CraftingType, TArray<FSimpleItemStructure> ItemArray);
 	
 	
 };

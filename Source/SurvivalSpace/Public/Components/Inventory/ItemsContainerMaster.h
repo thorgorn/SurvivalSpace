@@ -35,26 +35,28 @@ public:
 	FItemStructure GetItemAtIndex(int32 Index);
 
 	UFUNCTION(BlueprintPure, Category = "Items Container Master")
-	bool IsSlotEmpty(const int32 SlotIndex);
+	bool GetIsSlotEmpty(const int32 SlotIndex);
 
 	UFUNCTION(BlueprintPure, Category = "Items Container Master")
-	TArray<FItem> GetItemQuantities();
+	TArray<FSimpleItemStructure> GetItemQuantities();
 
+	//--------------------------------------------------------------------------------------------
+	// ITEMS CONTAINER MASTER SETTER FUNCTIONS
+	//--------------------------------------------------------------------------------------------
+	UFUNCTION(BlueprintPure, Category = "Items Container Master")
+	virtual bool RemoveItemAtIndex(const int32 Index);
 	//--------------------------------------------------------------------------------------------
 	// ITEMS CONTAINER MASTER PUBLIC FUNCTIONS
 	//--------------------------------------------------------------------------------------------
 	
 	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
 	void TransferItem(UItemsContainerMaster* ToComponent , int32 ToSpecificIndex, int32 ItemIndexToTransfer);
-	
-	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Items Container Master")
-	void OnSlotDrop(UItemsContainerMaster* FromContainer, int32 FromIndex, int32 DropIndex);
-	
-	UFUNCTION(BlueprintPure, Category = "Items Container Master")
-	virtual bool RemoveItemAtIndex(const int32 Index);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
 	void TransferItemHotKey(UItemsContainerMaster* FromContainer, int32 FromIndex);
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Items Container Master")
+	void OnSlotDrop(UItemsContainerMaster* FromContainer, int32 FromIndex, int32 DropIndex);
 
 protected:
 	
@@ -70,26 +72,19 @@ protected:
 	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Items Container Master")
 	void AddItemOnServer(const FItemStructure Item);
 
-	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
-	void UpdateUI(int32 Index, FItemStructure ItemInfo);
-	
-	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
-	virtual void HandleSlotDrop(UItemsContainerMaster* FromContainer, int32 FromIndex, int32 DropIndex);
-	
 	UFUNCTION(BlueprintPure, Category = "Items Container Master")
 	virtual bool AddItemToIndex(const FItemStructure& ItemInfo, int32 TargetIndex,
 	int32 FromIndex);
-
+	
+	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
+	virtual void HandleSlotDrop(UItemsContainerMaster* FromContainer, int32 FromIndex, int32 DropIndex);
 
 private:
 	
 	//--------------------------------------------------------------------------------------------
 	// ITEMS CONTAINER MASTER PRIVATE HELPER FUNCTIONS
 	//--------------------------------------------------------------------------------------------
-
-	UFUNCTION(BlueprintPure, Category = "Items Container Master")
-	bool HasItemsToStack(const FItemStructure& ItemInfo);
-
+	
 	void HandleStackableItem(FItemStructure& LocalItemInfo, bool bAddSplitItem);
 
 	void AddSplitItemToInventory(FItemStructure& LocalItemInfo);
@@ -101,9 +96,19 @@ private:
 	void AddRemainingItemsToNewSlots(FItemStructure& LocalItemInfo);
 
 	void AddItemToEmptySlot(FItemStructure& LocalItemInfo);
+
+	UFUNCTION(BlueprintPure, Category = "Items Container Master")
+	bool HasItemsToStack(const FItemStructure& ItemInfo);
 	
 	UFUNCTION(BlueprintPure, Category = "Items Container Master")
 	bool FindEmptySlot(int32& OutEmptySlotIndex);
+
+	//--------------------------------------------------------------------------------------------
+	// ITEMS CONTAINER MASTER PRIVATE FUNCTIONS
+	//--------------------------------------------------------------------------------------------
+
+	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
+	void UpdateUI(int32 Index, FItemStructure ItemInfo);
 	
 	//--------------------------------------------------------------------------------------------
 	// ITEMS CONTAINER MASTER PRIVATE VARIABLES

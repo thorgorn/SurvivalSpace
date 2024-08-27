@@ -374,7 +374,7 @@ void AASurvivalCharacter::GetItemsOnServer_Implementation(ECraftingType Crafting
 	case ECraftingType::PlayerInventory:
 		if (ControllerInterface)
 		{
-			TArray<FItem> ItemsArray = PlayerInventory->GetItemQuantities();
+			TArray<FSimpleItemStructure> ItemsArray = PlayerInventory->GetItemQuantities();
 			ControllerInterface->SetupCraftableItems(CraftingType, ItemsArray);
 		}
 		break;
@@ -736,7 +736,7 @@ void AASurvivalCharacter::DoublePressOnServer_Implementation(EContainerType Cont
 
 	if (IsValid(SelectedTargetContainer))
 	{
-		if (SelectedTargetContainer->IsSlotEmpty(Index))
+		if (SelectedTargetContainer->GetIsSlotEmpty(Index))
 		{
 			
 		}
