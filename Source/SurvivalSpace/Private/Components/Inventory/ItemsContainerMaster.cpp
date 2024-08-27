@@ -165,46 +165,43 @@ void UItemsContainerMaster::TransferItemHotKey(UItemsContainerMaster* FromContai
 	FromContainer->RemoveItemAtIndex(FromIndex);
 }
 
-void UItemsContainerMaster::GetItemQuantities(TArray<FItem>& ItemsArray)
+TArray<FItem> UItemsContainerMaster::GetItemQuantities()
 {
 	TArray<FItem> LocalItemArray;
+
+	bool bFoundItem = false;
 	
-	bool LocalFoundItem;
-	
-	int32 LocalNewQuantity; 
-	
-	for (int32 Index = 0; Index < Items.Num(); ++Index)
+	for (int32 i = 0; i < Items.Num(); ++i)
 	{
-		LocalFoundItem = false; 
-		
-		if (Items[Index].ItemID != 0)
+		if (Items[i].ItemID != 0)
 		{
-			for (int32 LocalIndex = 0; LocalIndex < LocalItemArray.Num(); ++LocalIndex)
+			for (int32 j = 0; j < LocalItemArray.Num(); ++j)
 			{
-				if (Items[Index].ItemID == LocalItemArray[LocalIndex].ItemID)
+				if (LocalItemArray[j].ItemID == Items[i].ItemID)
 				{
-					LocalFoundItem = true;
-					LocalNewQuantity = LocalItemArray[LocalIndex].ItemQuantity + Items[Index].ItemQuantity;
-					
-					LocalItemArray[LocalIndex].ItemQuantity = LocalNewQuantity;
-					break;
+					bFoundItem = true;
+
+					int32 LocalNewQuantity = Items[i].ItemQuantity + LocalItemArray[j].ItemQuantity;
+
+					LocalItemArray[j].ItemQuantity = LocalNewQuantity;
 				}
 			}
-			
-			if (!LocalFoundItem)
+
+			if (bFoundItem)
+				bFoundItem = false;
+
+			else
 			{
-				FItem NewItem;
+				FItem FoundItems = FItem();
+				FoundItems.ItemID = Items[i].ItemID;
+				FoundItems.ItemQuantity = Items[i].ItemQuantity;
 				
-				NewItem.ItemID = Items[Index].ItemID;
-				
-				NewItem.ItemQuantity = Items[Index].ItemQuantity;
-				
-				LocalItemArray.Add(NewItem);
+				LocalItemArray.Emplace(FoundItems);
 			}
 		}
 	}
-	
-	ItemsArray = LocalItemArray;
+
+	return LocalItemArray;
 }
 
 

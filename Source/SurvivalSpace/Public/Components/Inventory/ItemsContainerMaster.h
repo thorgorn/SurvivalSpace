@@ -37,6 +37,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Items Container Master")
 	bool IsSlotEmpty(const int32 SlotIndex);
 
+	UFUNCTION(BlueprintPure, Category = "Items Container Master")
+	TArray<FItem> GetItemQuantities();
+
 	//--------------------------------------------------------------------------------------------
 	// ITEMS CONTAINER MASTER PUBLIC FUNCTIONS
 	//--------------------------------------------------------------------------------------------
@@ -52,9 +55,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
 	void TransferItemHotKey(UItemsContainerMaster* FromContainer, int32 FromIndex);
-
-	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
-	void GetItemQuantities(TArray<FItem>& ItemArray);
 
 protected:
 	

@@ -367,14 +367,14 @@ void AASurvivalCharacter::GetCraftingRecipesAndItems(ECraftingType CraftingType)
 
 void AASurvivalCharacter::GetItemsOnServer_Implementation(ECraftingType CraftingType)
 {
-	TArray<FItem> ItemsArray;
+	
 	IControllerInterface* ControllerInterface = Cast<IControllerInterface>(GetController());
 	
 	switch (CraftingType) {
 	case ECraftingType::PlayerInventory:
-		PlayerInventory->GetItemQuantities(ItemsArray);
 		if (ControllerInterface)
 		{
+			TArray<FItem> ItemsArray = PlayerInventory->GetItemQuantities();
 			ControllerInterface->SetupCraftableItems(CraftingType, ItemsArray);
 		}
 		break;
