@@ -65,9 +65,6 @@ protected:
 	virtual void BeginPlay() override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
-	void FindEmptySlot(bool& Success, int32& EmptySlotIndex);
-
-	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
 	void AddItem(const FItemStructure& Item, bool AddSplitItem);
 	
 	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Items Container Master")
@@ -85,14 +82,29 @@ protected:
 
 
 private:
-
+	
 	//--------------------------------------------------------------------------------------------
-	// ITEMS CONTAINER MASTER PRIVATE FUNCTIONS
+	// ITEMS CONTAINER MASTER PRIVATE HELPER FUNCTIONS
 	//--------------------------------------------------------------------------------------------
 
 	UFUNCTION(BlueprintPure, Category = "Items Container Master")
 	bool HasItemsToStack(const FItemStructure& ItemInfo);
 
+	void HandleStackableItem(FItemStructure& LocalItemInfo, bool bAddSplitItem);
+
+	void AddSplitItemToInventory(FItemStructure& LocalItemInfo);
+
+	void StackOrAddNewItems(FItemStructure& LocalItemInfo);
+
+	void StackExistingItems(FItemStructure& LocalItemInfo);
+
+	void AddRemainingItemsToNewSlots(FItemStructure& LocalItemInfo);
+
+	void AddItemToEmptySlot(FItemStructure& LocalItemInfo);
+	
+	UFUNCTION(BlueprintPure, Category = "Items Container Master")
+	bool FindEmptySlot(int32& OutEmptySlotIndex);
+	
 	//--------------------------------------------------------------------------------------------
 	// ITEMS CONTAINER MASTER PRIVATE VARIABLES
 	//--------------------------------------------------------------------------------------------

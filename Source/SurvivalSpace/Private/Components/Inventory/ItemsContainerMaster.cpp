@@ -4,7 +4,6 @@
 #include "Components/Inventory/ItemsContainerMaster.h"
 #include "Character/ASurvivalCharacter.h"
 #include "DataAssets/PrimaryAssets/ItemInfo.h"
-#include "Kismet/KismetMathLibrary.h"
 
 
 UItemsContainerMaster::UItemsContainerMaster()
@@ -62,165 +61,24 @@ FItemStructure UItemsContainerMaster::GetItemAtIndex(int32 Index)
 	return FItemStructure();
 }
 
-void UItemsContainerMaster::FindEmptySlot(bool& Success, int32& EmptySlotIndex)
-{
-	for (int32 i = 0; i < Items.Num(); ++i)
-	{
-		if (Items[i].ItemID == 0)
-		{
-			EmptySlotIndex = i; 
-
-			Success = true;
-
-			break;
-		}
-	}
-}
-
 void UItemsContainerMaster::AddItem(const FItemStructure& Item, bool AddSplitItem)
 {
-    FItemStructure LocalItemInfo = Item;
+	FItemStructure LocalItemInfo = Item;
 	
-    int32 LocalEmptyIndex;
+	if (!LocalItemInfo.ItemAsset.ToSoftObjectPath().IsValid()) return; 
 	
-    int32 TotalItemQuantity = LocalItemInfo.ItemQuantity;
+	TSoftObjectPtr<UItemInfo> LoadedAsset = LocalItemInfo.ItemAsset.LoadSynchronous();
+	if (!LoadedAsset)return; 
 	
-    int32 MaxStackSize;
-	
-    int32 CurrentSlotQuantity;
-	
-    int32 TempSlotQuantity;
-
-    if (LocalItemInfo.ItemAsset.ToSoftObjectPath().IsValid())
-    {
-        UItemInfo* LoadedAsset = LocalItemInfo.ItemAsset.LoadSynchronous();
-
-        if (LoadedAsset->bIsStackable)
-        {
-            if (AddSplitItem)
-            {
-                bool Success = false;
-                int32 EmptySlotIndex = -1;
-                FindEmptySlot(Success, EmptySlotIndex);
-
-                if (Success)
-                {
-                    LocalEmptyIndex = EmptySlotIndex;
-                    
-                    if (Items.IsValidIndex(LocalEmptyIndex))
-                    {
-                        Items[LocalEmptyIndex] = LocalItemInfo;
-                    }
-                    else
-                    {
-                        Items.Insert(LocalItemInfo, LocalEmptyIndex);
-                    }
-
-                    UpdateUI(LocalEmptyIndex, LocalItemInfo);
-                }
-            }
-            else
-            {
-               bool bItemExistsInInv = HasItemsToStack(LocalItemInfo);
-
-                if (bItemExistsInInv)
-                {
-                    // Add Item if same item, and has room to stack
-                    for (int32 Index = 0; Index < Items.Num(); ++Index)
-                    {
-                        if (Items[Index].ItemID == LocalItemInfo.ItemID && Items[Index].ItemQuantity < Items[Index].StackSize)
-                        {
-                            MaxStackSize = Items[Index].StackSize;
-                        	
-                            LocalEmptyIndex = Index;
-                        	
-                            CurrentSlotQuantity = Items[Index].ItemQuantity;
-                        	
-                            TempSlotQuantity = CurrentSlotQuantity;
-                        	
-                            int32 SelectIntB = CurrentSlotQuantity + TotalItemQuantity;
-                        	
-                            bool PickA = SelectIntB >= MaxStackSize;
-                        	
-                            CurrentSlotQuantity = UKismetMathLibrary::SelectInt(MaxStackSize, SelectIntB, PickA);
-                        	
-                            Items[LocalEmptyIndex] = LocalItemInfo;
-                        	
-                            Items[LocalEmptyIndex].ItemQuantity = CurrentSlotQuantity;
-                        	
-                            UpdateUI(LocalEmptyIndex, Items[LocalEmptyIndex]);
-
-                            int32 RemainingItems = TotalItemQuantity - (MaxStackSize - TempSlotQuantity);
-                        	
-                            TotalItemQuantity = (PickA && RemainingItems > 0) ? RemainingItems : 0;
-                        	
-                            LocalItemInfo.ItemQuantity = TotalItemQuantity;
-
-                            if (TotalItemQuantity <= 0)
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                // Handle any remaining items that couldn't be stacked
-                while (TotalItemQuantity > 0)
-                {
-                    bool Success = false;
-                    int32 EmptySlotIndex = -1;
-                    FindEmptySlot(Success, EmptySlotIndex);
-
-                    if (Success)
-                    {
-                        LocalEmptyIndex = EmptySlotIndex;
-                    	
-                        MaxStackSize = LocalItemInfo.StackSize;
-
-                        int32 AddableQuantity = FMath::Min(TotalItemQuantity, MaxStackSize);
-                    	
-                        LocalItemInfo.ItemQuantity = AddableQuantity;
-                    	
-                        Items[LocalEmptyIndex] = LocalItemInfo;
-                    	
-                        UpdateUI(LocalEmptyIndex, Items[LocalEmptyIndex]);
-
-                        TotalItemQuantity -= AddableQuantity;
-                    }
-                    else
-                    {
-                        // Handle case where no empty slots are available
-                        break;
-                    }
-                }
-            }
-        }
-        else
-        {
-            bool Success = false;
-        	
-            int32 EmptySlotIndex = -1;
-        	
-            FindEmptySlot(Success, EmptySlotIndex);
-
-            if (Success)
-            {
-                LocalEmptyIndex = EmptySlotIndex;
-
-                if (Items.IsValidIndex(LocalEmptyIndex))
-                {
-                    Items[LocalEmptyIndex] = LocalItemInfo;
-                }
-                else
-                {
-                    Items.Insert(LocalItemInfo, LocalEmptyIndex);
-                }
-                UpdateUI(LocalEmptyIndex, LocalItemInfo);
-            }
-        }
-    }
+	if (LoadedAsset->bIsStackable)
+	{
+		HandleStackableItem(LocalItemInfo, AddSplitItem);
+	}
+	else
+	{
+		AddItemToEmptySlot(LocalItemInfo);
+	}
 }
-
 
 void UItemsContainerMaster::AddItemOnServer_Implementation(const FItemStructure Item)
 {
@@ -358,6 +216,132 @@ bool UItemsContainerMaster::HasItemsToStack(const FItemStructure& ItemInfo)
 			return true;
 	}
 	
+	return false;
+}
+
+void UItemsContainerMaster::HandleStackableItem(FItemStructure& LocalItemInfo, bool bAddSplitItem)
+{
+	if (bAddSplitItem)
+	{
+		AddSplitItemToInventory(LocalItemInfo);
+	}
+	else
+	{
+		StackOrAddNewItems(LocalItemInfo);
+	}
+}
+
+void UItemsContainerMaster::AddSplitItemToInventory(FItemStructure& LocalItemInfo)
+{
+	int32 EmptySlotIndex;
+	bool bSlotFound = FindEmptySlot(EmptySlotIndex);
+
+	if (bSlotFound && Items.IsValidIndex(EmptySlotIndex))
+	{
+		Items[EmptySlotIndex] = LocalItemInfo;
+	}
+	else
+	{
+		Items.Insert(LocalItemInfo, EmptySlotIndex);
+	}
+
+	UpdateUI(EmptySlotIndex, LocalItemInfo);
+}
+
+void UItemsContainerMaster::StackOrAddNewItems(FItemStructure& LocalItemInfo)
+{
+	if (HasItemsToStack(LocalItemInfo))
+	{
+		StackExistingItems(LocalItemInfo);
+	}
+
+	AddRemainingItemsToNewSlots(LocalItemInfo);
+}
+
+void UItemsContainerMaster::StackExistingItems(FItemStructure& LocalItemInfo)
+{
+	int32 TotalItemQuantity = LocalItemInfo.ItemQuantity;
+
+	for (int32 Index = 0; Index < Items.Num(); ++Index)
+	{
+		if (Items[Index].ItemID == LocalItemInfo.ItemID && Items[Index].ItemQuantity < Items[Index].StackSize)
+		{
+			int32 MaxStackSize = Items[Index].StackSize;
+			int32 CurrentSlotQuantity = Items[Index].ItemQuantity;
+
+			int32 NewSlotQuantity = FMath::Min(MaxStackSize, CurrentSlotQuantity + TotalItemQuantity);
+			Items[Index].ItemQuantity = NewSlotQuantity;
+
+			UpdateUI(Index, Items[Index]);
+
+			TotalItemQuantity -= (MaxStackSize - CurrentSlotQuantity);
+
+			if (TotalItemQuantity <= 0)
+			{
+				break;
+			}
+		}
+	}
+
+	LocalItemInfo.ItemQuantity = TotalItemQuantity;
+}
+
+void UItemsContainerMaster::AddRemainingItemsToNewSlots(FItemStructure& LocalItemInfo)
+{
+	int32 TotalItemQuantity = LocalItemInfo.ItemQuantity;
+
+	while (TotalItemQuantity > 0)
+	{
+		int32 EmptySlotIndex;
+		bool bSlotFound = FindEmptySlot(EmptySlotIndex);
+
+		if (!bSlotFound)
+		{
+			break; 
+		}
+
+		int32 MaxStackSize = LocalItemInfo.StackSize;
+		int32 AddableQuantity = FMath::Min(TotalItemQuantity, MaxStackSize);
+
+		LocalItemInfo.ItemQuantity = AddableQuantity;
+		Items[EmptySlotIndex] = LocalItemInfo;
+
+		UpdateUI(EmptySlotIndex, LocalItemInfo);
+
+		TotalItemQuantity -= AddableQuantity;
+	}
+}
+
+void UItemsContainerMaster::AddItemToEmptySlot(FItemStructure& LocalItemInfo)
+{
+	int32 EmptySlotIndex;
+	bool bSlotFound = FindEmptySlot(EmptySlotIndex);
+
+	if (bSlotFound)
+	{
+		if (Items.IsValidIndex(EmptySlotIndex))
+		{
+			Items[EmptySlotIndex] = LocalItemInfo;
+		}
+		else
+		{
+			Items.Insert(LocalItemInfo, EmptySlotIndex);
+		}
+		UpdateUI(EmptySlotIndex, LocalItemInfo);
+	}
+}
+
+bool UItemsContainerMaster::FindEmptySlot(int32& OutEmptySlotIndex)
+{
+	for (int32 Index = 0; Index < Items.Num(); ++Index)
+	{
+		if (Items[Index].ItemID == 0)
+		{
+			OutEmptySlotIndex = Index;
+			return true;
+		}
+	}
+
 	return false;
 }
 
