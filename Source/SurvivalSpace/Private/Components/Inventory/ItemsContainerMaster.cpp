@@ -31,43 +31,22 @@ void UItemsContainerMaster::BeginPlay()
 	
 }
 
-void UItemsContainerMaster::TransferItem(UItemsContainerMaster* ToComponent, int32 ToSpecificIndex, int32 ItemIndexToTransfer)
+void UItemsContainerMaster::TransferItem(UItemsContainerMaster* ToComponent, int32 ToIndex, int32 IndexToTransfer)
 {
-	
-	bool SlotEmpty = IsSlotEmpty(ItemIndexToTransfer);
-	
-	bool CombinedBool = SlotEmpty || (ToSpecificIndex == ItemIndexToTransfer && ToComponent == this);
-
-	if (CombinedBool)
+	if (!ToComponent || IsSlotEmpty(IndexToTransfer) || 
+		(ToIndex == IndexToTransfer && ToComponent == this))
 	{
-		
+		return;
 	}
-	else
+
+	const FItemStructure& LocalItemToTransfer = GetItemAtIndex(IndexToTransfer);
+
+	if (ToComponent->AddItemToIndex(LocalItemToTransfer, ToIndex, IndexToTransfer))
 	{
-		TObjectPtr<UItemsContainerMaster> LocalReceiverComponent = ToComponent;
-		
-		int32 LocalSpecificIndex = ToSpecificIndex;
-		
-		int32 LocalItemIndex = ItemIndexToTransfer;
-		
-		if (IsValid(LocalReceiverComponent))
-		{
-			FItemStructure LocalItemToTransfer;
-			
-			GetItemAtIndex(LocalItemIndex, LocalItemToTransfer);
-			
-			bool Success;
-			
-			LocalReceiverComponent->AddItemToIndex(LocalItemToTransfer, LocalSpecificIndex, LocalItemIndex, Success);
-			
-			if (Success)
-			{
-				bool RemoveSuccess;
-				RemoveItemAtIndex(LocalItemIndex, RemoveSuccess);
-			}
-		}
+		RemoveItemAtIndex(IndexToTransfer);
 	}
 }
+
 
 void UItemsContainerMaster::OnSlotDrop_Implementation(UItemsContainerMaster* FromContainer, int32 FromIndex,
 													  int32 DropIndex)
@@ -75,35 +54,27 @@ void UItemsContainerMaster::OnSlotDrop_Implementation(UItemsContainerMaster* Fro
 	HandleSlotDrop(FromContainer, FromIndex, DropIndex);
 }
 
-void UItemsContainerMaster::GetItemAtIndex(int32 Index, FItemStructure& ItemInfo)
+FItemStructure UItemsContainerMaster::GetItemAtIndex(int32 Index)
 {
 	if (Items.IsValidIndex(Index))
-	{
-		ItemInfo = Items[Index];
-	}
+		return Items[Index];
+
+	return FItemStructure();
 }
 
 void UItemsContainerMaster::FindEmptySlot(bool& Success, int32& EmptySlotIndex)
 {
-	bool FoundEmptySlot = false;
-	int32 LocalEmptySlotIndex = -1;
-	
-	for (int32 Index = 0; Index < Items.Num(); ++Index)
+	for (int32 i = 0; i < Items.Num(); ++i)
 	{
-		FItemStructure Item = Items[Index];
-		
-		int32 ItemID = Item.ItemID;
-		
-		if (ItemID == 0)
+		if (Items[i].ItemID == 0)
 		{
-			LocalEmptySlotIndex = Index;
-			FoundEmptySlot = true;
-			break; 
+			EmptySlotIndex = i; 
+
+			Success = true;
+
+			break;
 		}
 	}
-	
-	Success = FoundEmptySlot;
-	EmptySlotIndex = LocalEmptySlotIndex;
 }
 
 void UItemsContainerMaster::AddItem(const FItemStructure& Item, bool AddSplitItem)
@@ -150,8 +121,7 @@ void UItemsContainerMaster::AddItem(const FItemStructure& Item, bool AddSplitIte
             }
             else
             {
-                bool bItemExistsInInv;
-                HasItemsToStack(LocalItemInfo, bItemExistsInInv);
+               bool bItemExistsInInv = HasItemsToStack(LocalItemInfo);
 
                 if (bItemExistsInInv)
                 {
@@ -294,25 +264,47 @@ void UItemsContainerMaster::HandleSlotDrop(UItemsContainerMaster* FromContainer,
 	// OVERRIDDEN IN CHILD CLASSES
 }
 
-bool UItemsContainerMaster::IsSlotEmpty(int32 SlotIndex)
+bool UItemsContainerMaster::AddItemToIndex(const FItemStructure& ItemInfo, int32 ToItemIndex, int32 FromItemIndex)
 {
-	if (Items[SlotIndex].ItemID == 0)
-		return true;
+	if (IsSlotEmpty(ToItemIndex))
+	{
+		if (Items.IsValidIndex(ToItemIndex))
+		{
+			Items[ToItemIndex] = ItemInfo;
+
+			return true;
+		}
+	}
+	else
+	{
+		
+	}
+	return false;
+}
+
+
+bool UItemsContainerMaster::IsSlotEmpty(const int32 SlotIndex)
+{
+	if (Items[SlotIndex].ItemID == 0) return true;
+		
 	
 	return false;
 }
 
+bool UItemsContainerMaster::RemoveItemAtIndex(const int32 Index)
+{
+	Items[Index] = FItemStructure();
+	
+	return true;
+}
+
 void UItemsContainerMaster::TransferItemHotKey(UItemsContainerMaster* FromContainer, int32 FromIndex)
 {
-	FItemStructure ItemInfo;
-	
-	FromContainer->GetItemAtIndex(FromIndex, ItemInfo);
+	FItemStructure ItemInfo = FromContainer->GetItemAtIndex(FromIndex);
 	
 	AddItem(ItemInfo, false);
 	
-	bool Success;
-	
-	FromContainer->RemoveItemAtIndex(FromIndex, Success);
+	FromContainer->RemoveItemAtIndex(FromIndex);
 }
 
 void UItemsContainerMaster::GetItemQuantities(TArray<FItem>& ItemsArray)
@@ -358,90 +350,14 @@ void UItemsContainerMaster::GetItemQuantities(TArray<FItem>& ItemsArray)
 }
 
 
-void UItemsContainerMaster::AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecificIndex, int32 LocalItemIndex, bool& Success)
+bool UItemsContainerMaster::HasItemsToStack(const FItemStructure& ItemInfo)
 {
-	FItemStructure LocalItem = ItemInfo;
+	for (const auto& Item : Items)
+	{
+		if (Item.ItemID == ItemInfo.ItemID && Item.ItemQuantity < Item.StackSize)
+			return true;
+	}
 	
-	//int32 LocalTargetIndex = LocalSpecificIndex;
-	//int32 LocalFromIndex = LocalItemIndex;
-
-	bool SlotEmpty = IsSlotEmpty(LocalSpecificIndex);
-
-	if (SlotEmpty)
-	{
-		// If the target slot is empty, place the item directly
-		if (Items.IsValidIndex(LocalSpecificIndex))
-		{
-			Items[LocalSpecificIndex] = LocalItem;
-			Success = true;
-		}
-	}
-	else
-	{
-		switch (ContainerType)
-		{
-		case EContainerType::Inventory:
-			SwapItemIndexes(LocalSpecificIndex, LocalItemIndex);
-			break;
-		case EContainerType::HotBar:
-			break;
-		case EContainerType::Storage:
-			break;
-		case EContainerType::Armor:
-			break;
-		case EContainerType::Crafting:
-			break;
-		}
-		Success = false;
-	}
+	return false;
 }
 
-void UItemsContainerMaster::HasItemsToStack(FItemStructure ItemInfo, bool& ItemExistsInInv)
-{
-	//FItemStructure LocalItemInfo = ItemInfo;
-	
-	bool LocalItemExistsInInv = false;
-
-	for (int32 Index = 0; Index < Items.Num(); ++Index)
-	{
-		if (Items[Index].ItemID == ItemInfo.ItemID && Items[Index].ItemQuantity < Items[Index].StackSize)
-		{
-			LocalItemExistsInInv = true;
-			break;
-		}
-	}
-	ItemExistsInInv = LocalItemExistsInInv;
-}
-
-void UItemsContainerMaster::RemoveItemAtIndex(int32 Index, bool& Success)
-{
-	if (Items.IsValidIndex(Index))
-	{
-		UItemInfo* LoadedItem = Items[Index].ItemAsset.LoadSynchronous();
-		if (LoadedItem)
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("%s Removed"),*LoadedItem->ItemName.ToString());
-		}
-		Items[Index] = FItemStructure();
-		Success = true;
-		UpdateUI(Index, Items[Index]);
-	}
-	else
-	{
-		Success = false;
-	}
-}
-
-void UItemsContainerMaster::SwapItemIndexes(int32 TargetIndex, int32 FromIndex)
-{
-	//int32 LocalTargetIndex = TargetIndex;
-	//int32 LocalFromIndex = FromIndex;
-
-	FItemStructure LocalTargetItem = Items[TargetIndex];
-	FItemStructure LocalFromItem = Items[FromIndex];
-
-	Items[TargetIndex] = LocalFromItem;
-	Items[FromIndex] = LocalTargetItem;
-	UpdateUI(TargetIndex, LocalFromItem);
-	UpdateUI(FromIndex, LocalTargetItem);
-}

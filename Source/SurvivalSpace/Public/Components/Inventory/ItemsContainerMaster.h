@@ -31,6 +31,12 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Items Container Master")
 	EContainerType GetContainerType() const;
 
+	UFUNCTION(BlueprintPure, Category = "Items Container Master")
+	FItemStructure GetItemAtIndex(int32 Index);
+
+	UFUNCTION(BlueprintPure, Category = "Items Container Master")
+	bool IsSlotEmpty(const int32 SlotIndex);
+
 	//--------------------------------------------------------------------------------------------
 	// ITEMS CONTAINER MASTER PUBLIC FUNCTIONS
 	//--------------------------------------------------------------------------------------------
@@ -42,25 +48,14 @@ public:
 	void OnSlotDrop(UItemsContainerMaster* FromContainer, int32 FromIndex, int32 DropIndex);
 	
 	UFUNCTION(BlueprintPure, Category = "Items Container Master")
-	void GetItemAtIndex(int32 Index, FItemStructure &ItemInfo);
-
-	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
-	virtual void RemoveItemAtIndex(int32 Index, bool &Success);
-
-	UFUNCTION(BlueprintPure, Category = "Items Container Master")
-	bool IsSlotEmpty(int32 SlotIndex);
-
+	virtual bool RemoveItemAtIndex(const int32 Index);
+	
 	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
 	void TransferItemHotKey(UItemsContainerMaster* FromContainer, int32 FromIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
 	void GetItemQuantities(TArray<FItem>& ItemArray);
-	
-	//--------------------------------------------------------------------------------------------
-	// ITEMS CONTAINER MASTER PUBLIC PROPERTIES & VARIABLES
-	//--------------------------------------------------------------------------------------------
 
-	
 protected:
 	
 	//--------------------------------------------------------------------------------------------
@@ -84,24 +79,28 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
 	virtual void HandleSlotDrop(UItemsContainerMaster* FromContainer, int32 FromIndex, int32 DropIndex);
 	
-	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
-	virtual void AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecificIndex, int32 LocalItemIndex, bool &Success);
-	
-	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
-	void HasItemsToStack(FItemStructure ItemInfo, bool& ItemExistsInInv);
-
-	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
-	virtual void SwapItemIndexes(int32 TargetIndex, int32 FromIndex);
+	UFUNCTION(BlueprintPure, Category = "Items Container Master")
+	virtual bool AddItemToIndex(const FItemStructure& ItemInfo, int32 TargetIndex,
+	int32 FromIndex);
 
 
 private:
+
 	//--------------------------------------------------------------------------------------------
-	// ITEMS CONTAINER MASTER PRIVATE PROPERTIES & VARIABLES
+	// ITEMS CONTAINER MASTER PRIVATE FUNCTIONS
 	//--------------------------------------------------------------------------------------------
+
+	UFUNCTION(BlueprintPure, Category = "Items Container Master")
+	bool HasItemsToStack(const FItemStructure& ItemInfo);
+
+	//--------------------------------------------------------------------------------------------
+	// ITEMS CONTAINER MASTER PRIVATE VARIABLES
+	//--------------------------------------------------------------------------------------------
+
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
 	EContainerType ContainerType;
 
-	UPROPERTY(EditAnywhere, Category = "Inventory")
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
 	TArray<FItemStructure> Items;
 
 };

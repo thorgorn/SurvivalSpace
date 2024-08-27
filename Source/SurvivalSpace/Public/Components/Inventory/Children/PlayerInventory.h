@@ -22,7 +22,8 @@ protected:
 
 	virtual void HandleSlotDrop(UItemsContainerMaster* FromContainer, int32 FromIndex, int32 DropIndex) override;
 
-	virtual void AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecificIndex, int32 LocalItemIndex, bool& Success) override;
+	virtual bool AddItemToIndex(const FItemStructure& ItemInfo, int32 TargetIndex,
+	int32 FromIndex) override;
 
-	virtual void RemoveItemAtIndex(int32 Index, bool& Success) override;
+	virtual bool RemoveItemAtIndex(const int32 Index) override;
 };

@@ -340,8 +340,7 @@ void AASurvivalCharacter::DestroyItem(int32 Index)
 
 		if (ContainerMaster)
 		{
-			bool Success;
-			ContainerMaster->RemoveItemAtIndex(Index,Success);
+			ContainerMaster->RemoveItemAtIndex(Index);
 		}
 	}
 }
@@ -743,8 +742,7 @@ void AASurvivalCharacter::DoublePressOnServer_Implementation(EContainerType Cont
 		}
 		else
 		{
-			FItemStructure ItemInfo;
-			SelectedTargetContainer->GetItemAtIndex(Index,ItemInfo);
+			FItemStructure ItemInfo =SelectedTargetContainer->GetItemAtIndex(Index);
 			if (ItemInfo.ItemAsset.ToSoftObjectPath().IsValid())
 			{
 				UItemInfo* LoadedAsset = ItemInfo.ItemAsset.LoadSynchronous();
@@ -815,8 +813,7 @@ void AASurvivalCharacter::UseHotBar(int32 Index)
 					}
 					else
 					{
-						FItemStructure ItemInfo;
-						PlayerHotBar->GetItemAtIndex(Index, ItemInfo);
+						FItemStructure ItemInfo = PlayerHotBar->GetItemAtIndex(Index);
 						
 						UItemInfo* LoadedAsset = ItemInfo.ItemAsset.LoadSynchronous();
 						if (LoadedAsset)
@@ -1021,8 +1018,8 @@ bool AASurvivalCharacter::IsEquippedItemInHotbar(int32 Index) const
 		return false;
 	}
 
-	FItemStructure HotbarItem;
-	PlayerHotBar->GetItemAtIndex(Index, HotbarItem);
+	
+	FItemStructure HotbarItem = PlayerHotBar->GetItemAtIndex(Index);
 
 	if (HotbarItem.ItemAsset.ToSoftObjectPath().IsValid())
 	{

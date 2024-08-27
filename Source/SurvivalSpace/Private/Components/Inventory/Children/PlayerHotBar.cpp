@@ -18,7 +18,7 @@ void UPlayerHotBar::CheckHotBar(int32 Index, bool& HasItemInSlot, EItemType& Ite
 		
 		if (GetItems()[Index].ItemAsset.ToSoftObjectPath().IsValid())
 		{
-			UItemInfo* LoadedAsset = GetItems()[Index].ItemAsset.LoadSynchronous();
+			TSoftObjectPtr<UItemInfo> LoadedAsset = GetItems()[Index].ItemAsset.LoadSynchronous();
 			if (LoadedAsset)
 			{
 				ItemType = LoadedAsset->ItemType;
@@ -53,10 +53,10 @@ case EContainerType::Crafting:
 }
 
 
-
-void UPlayerHotBar::AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecificIndex, int32 LocalItemIndex, bool& Success)
+bool UPlayerHotBar::AddItemToIndex(const FItemStructure& ItemInfo, int32 TargetIndex,
+	int32 FromIndex)
 {
-	Super::AddItemToIndex(ItemInfo, LocalSpecificIndex, LocalItemIndex, Success);
+	const bool& bIsSuccessful = Super::AddItemToIndex(ItemInfo, TargetIndex, FromIndex);
 	
 	if (ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(GetOwner()))
 	{
@@ -66,19 +66,19 @@ void UPlayerHotBar::AddItemToIndex(FItemStructure ItemInfo, int32 LocalSpecificI
 
 		if (SurvivalCharacter)
 		{
-			FItemStructure SpecificItemInfo;
+			FItemStructure SpecificItemInfo = GetItemAtIndex(TargetIndex);
 			
-			GetItemAtIndex(LocalSpecificIndex, SpecificItemInfo);
-			
-			CharacterInterface->UpdateItem(GetContainerType(), LocalSpecificIndex, SpecificItemInfo);
+			CharacterInterface->UpdateItem(GetContainerType(), TargetIndex, SpecificItemInfo);
+			return bIsSuccessful;
 		}
 	}
+	return false;
 }
 
 
-void UPlayerHotBar::RemoveItemAtIndex(int32 Index, bool& Success)
+bool UPlayerHotBar::RemoveItemAtIndex(const int32 Index)
 {
-	Super::RemoveItemAtIndex(Index, Success);
+	const bool& bIsSuccessful = Super::RemoveItemAtIndex(Index);
 	
 	if (ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(GetOwner()))
 	{
@@ -89,6 +89,8 @@ void UPlayerHotBar::RemoveItemAtIndex(int32 Index, bool& Success)
 		if (SurvivalCharacter)
 		{
 			CharacterInterface->ResetItem(GetContainerType(), Index);
+			return bIsSuccessful;
 		}
 	}
+	return false;
 }

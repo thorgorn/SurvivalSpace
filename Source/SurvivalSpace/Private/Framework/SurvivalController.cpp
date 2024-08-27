@@ -278,6 +278,7 @@ void ASurvivalController::DestroyItemWidget_Implementation(int32 ItemIndex)
 		if (CharacterInterface)
 		{
 			CharacterInterface->DestroyItem(ItemIndex);
+			UpdateCraftingUI();
 		}
 	}
 }
