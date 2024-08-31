@@ -8,6 +8,7 @@
 #include "UObject/Interface.h"
 #include "SurvivalCharacterInterface.generated.h"
 
+class UItemRecipe;
 class AASurvivalCharacter;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, NotBlueprintable)
@@ -72,4 +73,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void GetCraftingRecipesAndItems(ECraftingType CraftingType);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void CraftItem(TSoftObjectPtr<UItemRecipe> RecipeAsset, EContainerType ContainerType, ECraftingType CraftingType);
 };

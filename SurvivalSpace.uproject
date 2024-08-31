@@ -31,6 +31,15 @@
 			"Name": "FlatNodes",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/b719437f3fb54c259b34227363df8cab"
+		},
+		{
+			"Name": "NiagaraUIRenderer",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/fd24d23ca57b4c59a4e4b7368da250bd",
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Android"
+			]
 		}
 	]
 }

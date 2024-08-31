@@ -12,6 +12,7 @@
 #include "Components/Inventory/Children/PlayerInventory.h"
 #include "DataAssets/PrimaryAssets/HarvestingResource.h"
 #include "DataAssets/PrimaryAssets/ItemInfo.h"
+#include "DataAssets/PrimaryAssets/ItemRecipe.h"
 #include "Framework/SurvivalController.h"
 #include "Interfaces/ControllerInterface.h"
 #include "Interfaces/EquippableItemInterface.h"
@@ -365,6 +366,12 @@ void AASurvivalCharacter::GetCraftingRecipesAndItems(ECraftingType CraftingType)
 	GetItemsOnServer(CraftingType);
 }
 
+void AASurvivalCharacter::CraftItem(TSoftObjectPtr<UItemRecipe> RecipeAsset, EContainerType ContainerType,
+	ECraftingType CraftingType)
+{
+	CraftItemOnServer(RecipeAsset, ContainerType, CraftingType);
+}
+
 void AASurvivalCharacter::GetItemsOnServer_Implementation(ECraftingType CraftingType)
 {
 	
@@ -391,6 +398,151 @@ void AASurvivalCharacter::GetItemsOnServer_Implementation(ECraftingType Crafting
 	case ECraftingType::CropPlot:
 		break;
 	}
+}
+
+void AASurvivalCharacter::CraftItemOnServer_Implementation(const TSoftObjectPtr<UItemRecipe>& RecipeAsset,
+	EContainerType ContainerType, ECraftingType CraftingType)
+{
+	if (bAdminMode)
+	{
+		// Admin crafting logic
+	}
+	else
+	{
+		if (bIsCrafting)
+		{
+			return; 
+		}
+
+		if (RecipeAsset.ToSoftObjectPath().IsValid())
+		{
+			const TObjectPtr<UItemRecipe> LoadedAsset = RecipeAsset.LoadSynchronous();
+
+			if (LoadedAsset)
+			{
+				bool bSuccess = false;
+				EContainerType Container;
+				ECraftingType CraftingTable;
+				TSoftObjectPtr<UItemInfo> ItemToAdd;
+
+				CraftItems(LoadedAsset, ContainerType, CraftingType, ItemToAdd, bSuccess, Container, CraftingTable);
+
+				if (bSuccess)
+				{
+					if (ItemToAdd.ToSoftObjectPath().IsValid())
+					{
+						TObjectPtr<UItemInfo> LoadedItem = ItemToAdd.LoadSynchronous();
+
+						if (LoadedItem)
+						{
+							bIsCrafting = true;
+							GetWorld()->GetTimerManager().SetTimer(
+								DelayCraftItemHandle,
+								[this, LoadedItem, Container, CraftingType, ItemToAdd]() 
+								{
+									DelayCraftItem(LoadedItem, Container, CraftingType, ItemToAdd);
+								}, 
+								3.0f, 
+								false
+							);
+						}
+					}
+				}
+			}
+		}
+
+		bIsCrafting = false; 
+	}
+}
+
+
+
+void AASurvivalCharacter::CraftItems(const UItemRecipe* RecipeAsset, EContainerType ContainerType,
+	ECraftingType CraftingType, TSoftObjectPtr<UItemInfo> &ItemAsset, bool &BCanCraft, EContainerType &ContainerToAdd, ECraftingType &CraftTableType)
+{
+	switch (CraftingType) {
+	case ECraftingType::PlayerInventory:
+		if (PlayerInventory->CheckIfCraftable(RecipeAsset->RequiredItems))
+		{
+			ItemAsset = RecipeAsset->ItemAsset;
+			BCanCraft = true;
+			ContainerToAdd = ContainerType;
+			CraftTableType = CraftingType;
+		}
+		break;
+	case ECraftingType::CookingPot:
+		break;
+	case ECraftingType::CraftingBench:
+		break;
+	case ECraftingType::SmeltingForge:
+		break;
+	case ECraftingType::AdvancedWorkBench:
+		break;
+	case ECraftingType::StorageBox:
+		break;
+	case ECraftingType::CropPlot:
+		break;
+	}
+}
+
+
+void AASurvivalCharacter::AddCraftedItem(UItemInfo* ItemToAdd, EContainerType ContainerType, ECraftingType CraftingType, TSoftObjectPtr<UItemInfo> ItemAsset)
+{
+	
+	FItemStructure ItemToCreate;
+	ItemToCreate.ItemID = ItemToAdd->ItemID;
+	ItemToCreate.ItemQuantity = 1;
+	ItemToCreate.ItemAsset = ItemAsset;
+	ItemToCreate.CurrentHP = ItemToAdd->ItemCurrentHP;
+	ItemToCreate.MaxHP = ItemToAdd->ItemMaxHP;
+	ItemToCreate.CurrentAmmo = ItemToAdd->CurrentAmmo;
+	ItemToCreate.MaxAmmo = ItemToAdd->MaxAmmo;
+	ItemToCreate.StackSize = ItemToAdd->StackSize;
+	
+	switch (ContainerType) {
+	case EContainerType::Inventory:
+		PlayerInventory->AddItemOnServer(ItemToCreate);
+		UpdateCraftResourcesUI();
+		break;
+	case EContainerType::HotBar:
+		
+			break;
+	case EContainerType::Storage:
+		
+			break;
+	case EContainerType::Armor:
+		
+			break;
+	case EContainerType::Crafting:
+		
+			break;
+	}
+	
+	switch (CraftingType) {
+	case ECraftingType::PlayerInventory:
+		GetItemsOnServer(CraftingType);
+		break;
+	case ECraftingType::CookingPot:
+		break;
+	case ECraftingType::CraftingBench:
+		break;
+	case ECraftingType::SmeltingForge:
+		break;
+	case ECraftingType::AdvancedWorkBench:
+		break;
+	case ECraftingType::StorageBox:
+		break;
+	case ECraftingType::CropPlot:
+		break;
+	}
+
+	bIsCrafting = false; 
+}
+
+
+void AASurvivalCharacter::DelayCraftItem(UItemInfo* ItemToAdd, EContainerType ContainerType, ECraftingType CraftingType,TSoftObjectPtr<UItemInfo> ItemAsset)
+{
+	AddCraftedItem(ItemToAdd, ContainerType, CraftingType, ItemAsset);
 }
 
 void AASurvivalCharacter::HarvestLargeItem(FItemStructure Resource)
@@ -448,7 +600,7 @@ void AASurvivalCharacter::Interaction(FRotator CameraRotation)
 			StartTrace,
 			EndTrace,
 			FQuat::Identity,
-			ECC_Camera,
+			ECC_GameTraceChannel2,
 			CollisionShape,
 			CollisionParams
 			);

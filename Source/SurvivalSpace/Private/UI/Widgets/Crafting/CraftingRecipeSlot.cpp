@@ -5,6 +5,9 @@
 
 #include "Components/SizeBox.h"
 #include "DataAssets/PrimaryAssets/ItemRecipe.h"
+#include "Interfaces/SurvivalCharacterInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/Character.h"
 #include "UI/Widgets/Crafting/CraftingInfo.h"
 
 
@@ -44,4 +47,20 @@ void UCraftingRecipeSlot::NativeOnUnhovered()
 
 	SizeBox->SetToolTip(nullptr);
 
+}
+
+void UCraftingRecipeSlot::NativeOnPressed()
+{
+	Super::NativeOnPressed();
+
+	if (bCanCraftItem)
+	{
+		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		{
+			if (CharacterInterface)
+			{
+				CharacterInterface->CraftItem(RecipeAsset, ContainerType, CraftingType);
+			}
+		}
+	}
 }

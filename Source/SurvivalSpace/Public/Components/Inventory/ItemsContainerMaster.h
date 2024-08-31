@@ -21,7 +21,9 @@ public:
 	//--------------------------------------------------------------------------------------------
 	
 	UItemsContainerMaster();
-	
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Items Container Master")
+	void AddItemOnServer(const FItemStructure Item);
 	//--------------------------------------------------------------------------------------------
 	// ITEMS CONTAINER MASTER GETTER FUNCTIONS
 	//--------------------------------------------------------------------------------------------
@@ -58,6 +60,12 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Items Container Master")
 	void OnSlotDrop(UItemsContainerMaster* FromContainer, int32 FromIndex, int32 DropIndex);
 
+	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
+	bool CheckIfCraftable(TArray<FItemRecipes> RequiredItems);
+
+	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
+	void CraftItem(TArray<FItemRecipes> RequiredItems);
+
 protected:
 	
 	//--------------------------------------------------------------------------------------------
@@ -69,8 +77,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
 	void AddItem(const FItemStructure& Item, bool AddSplitItem);
 	
-	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Items Container Master")
-	void AddItemOnServer(const FItemStructure Item);
+
 
 	UFUNCTION(BlueprintPure, Category = "Items Container Master")
 	virtual bool AddItemToIndex(const FItemStructure& ItemInfo, int32 TargetIndex,

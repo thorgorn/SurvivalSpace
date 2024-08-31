@@ -6,6 +6,7 @@
 
 class UItemInfo;
 
+// Main Item struct that ties into UItemInfo
 USTRUCT(Blueprintable)
 struct FItemStructure
 {
@@ -38,6 +39,7 @@ struct FItemStructure
 	TSoftObjectPtr<UItemInfo> ItemAsset;
 };
 
+// Used for crafting items
 USTRUCT(Blueprintable)
 struct FSimpleItemStructure
 {
@@ -52,7 +54,7 @@ struct FSimpleItemStructure
 	int32 ItemQuantity;
 };
 
-
+// Used for resource items
 USTRUCT(Blueprintable)
 struct FResourceStructure
 {
@@ -70,6 +72,7 @@ struct FResourceStructure
 	EHarvestingToolType PreferredTool = EHarvestingToolType::Hatchet;
 };
 
+// Used to setup resource effects i.e vfx and sfx
 USTRUCT(Blueprintable)
 struct FResourceEffects
 {
@@ -87,6 +90,7 @@ struct FResourceEffects
 	TObjectPtr<USoundBase> SFX;
 };
 
+// Used for crafting items
 USTRUCT(Blueprintable)
 struct FItemRecipes
 {
@@ -107,6 +111,7 @@ struct FItemRecipes
 	FText ItemName;
 };
 
+// Used for crafting item slot widget
 USTRUCT(Blueprintable)
 struct FItemRecipeInfo
 {
@@ -131,6 +136,7 @@ struct FItemRecipeInfo
 
 };
 
+// Used to get montages for equippables
 USTRUCT(Blueprintable)
 struct FEquippableMontages
 {
@@ -140,4 +146,22 @@ struct FEquippableMontages
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UAnimMontage> AttackMontage;
+};
+
+// Used for Crafting Items
+USTRUCT(Blueprintable)
+struct FCraftingStruct
+{
+	GENERATED_BODY()
+
+	FCraftingStruct() = default;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 Index = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 Quantity = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 ItemID = 0;
 };

@@ -24,6 +24,106 @@ EContainerType UItemsContainerMaster::GetContainerType() const
 }
 
 
+bool UItemsContainerMaster::CheckIfCraftable(TArray<FItemRecipes> RequiredItems)
+{
+	TArray<FSimpleItemStructure> ItemsArray = GetItemQuantities();
+
+	if (ItemsArray.Num() == 0)
+	{
+		return false;
+	}
+	
+	for (int32 Index = 0; Index < RequiredItems.Num(); ++Index)
+	{
+		bool bItemFound = false;
+
+		for (int32 ItemIndex = 0; ItemIndex < ItemsArray.Num(); ++ItemIndex)
+		{
+			if (ItemsArray[ItemIndex].ItemID == RequiredItems[Index].ItemID)
+			{
+				if (ItemsArray[ItemIndex].ItemQuantity >= RequiredItems[Index].ItemQuantity)
+				{
+					bItemFound = true;
+					break; 
+				}
+			}
+		}
+		
+		if (!bItemFound)
+		{
+			return false;
+		}
+	}
+	
+	CraftItem(RequiredItems);
+	return true;
+}
+
+void UItemsContainerMaster::CraftItem(TArray<FItemRecipes> RequiredItems)
+{
+    TArray<FCraftingStruct> InventoryArray; 
+	
+    for (int32 Index = 0; Index < Items.Num(); ++Index)
+    {
+        if (Items[Index].ItemID != 0) 
+        {
+            FCraftingStruct ItemsArray;
+            ItemsArray.Index = Index;
+            ItemsArray.Quantity = Items[Index].ItemQuantity;
+            ItemsArray.ItemID = Items[Index].ItemID;
+
+            InventoryArray.Add(ItemsArray);
+        }
+    }
+	
+    for (int32 RequiredIndex = 0; RequiredIndex < RequiredItems.Num(); ++RequiredIndex)
+    {
+        int32 LocalItemID = RequiredItems[RequiredIndex].ItemID;
+        int32 LocalQuantityToRemove = RequiredItems[RequiredIndex].ItemQuantity;
+    	
+        for (int32 ItemIndex = 0; ItemIndex < InventoryArray.Num(); ++ItemIndex)
+        {
+            if (InventoryArray[ItemIndex].ItemID == LocalItemID)
+            {
+                int32 LocalCurrentQuantity = InventoryArray[ItemIndex].Quantity;
+            	
+                int32 RemainingQuantityAfterRemoval = LocalCurrentQuantity - LocalQuantityToRemove;
+                bool HasEnoughQuantity = LocalCurrentQuantity >= LocalQuantityToRemove;
+            	
+                InventoryArray[ItemIndex].Quantity = HasEnoughQuantity ? RemainingQuantityAfterRemoval : 0;
+            	
+                if (InventoryArray[ItemIndex].Quantity == 0)
+                {
+                    RemoveItemAtIndex(InventoryArray[ItemIndex].Index);
+                	if (AASurvivalCharacter* SurvivalCharacter = Cast<AASurvivalCharacter>(GetOwner()))
+                	{
+                		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
+                		if (CharacterInterface)
+                		{
+                			CharacterInterface->ResetCraftItem(ContainerType,InventoryArray[ItemIndex].Index);
+                		}
+                	}
+                }
+                else
+                {
+                    Items[InventoryArray[ItemIndex].Index].ItemQuantity = InventoryArray[ItemIndex].Quantity;
+                	
+                    UpdateUI(InventoryArray[ItemIndex].Index, Items[InventoryArray[ItemIndex].Index]);
+                }
+            	
+                LocalQuantityToRemove = HasEnoughQuantity ? 0 : -RemainingQuantityAfterRemoval;
+            	
+                if (LocalQuantityToRemove <= 0)
+                {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+
 void UItemsContainerMaster::BeginPlay()
 {
 	Super::BeginPlay();

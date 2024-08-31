@@ -36,7 +36,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "HotBar Data")
 	TObjectPtr<AActor> HolsteredItemRef;
 
-	bool bIsItemEquipped; 
+	bool bIsItemEquipped;
+
+	
+	//Timer delay
+	FTimerHandle DelayCraftItemHandle;
 
 protected:
 
@@ -74,6 +78,12 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller Ref")
 	TObjectPtr<ASurvivalController> ControllerRef;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	bool bAdminMode = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	bool bIsCrafting;
 
 
 	
@@ -241,11 +251,27 @@ protected:
 
 	virtual void GetCraftingRecipesAndItems(ECraftingType CraftingType) override;
 
+	virtual void CraftItem(TSoftObjectPtr<UItemRecipe> RecipeAsset, EContainerType ContainerType, ECraftingType CraftingType) override;
+
 	//--------------------------------------------------------------------------------------------
 	// CHARACTER CRAFTING FUNCTIONS
 	//--------------------------------------------------------------------------------------------
 	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "Character Crafting Functions")
 	void GetItemsOnServer(ECraftingType CraftingType);
+
+	UFUNCTION(BlueprintCallable,Server, Unreliable, Category = "Character Crafting Functions")
+	void CraftItemOnServer(const TSoftObjectPtr<UItemRecipe>& RecipeAsset, EContainerType ContainerType, ECraftingType CraftingType);
+
+	UFUNCTION(BlueprintCallable, Category = "Character Crafting Functions")
+	void CraftItems(const UItemRecipe* RecipeAsset, EContainerType ContainerType, ECraftingType CraftingType, TSoftObjectPtr<UItemInfo> &ItemAsset, bool &BCanCraft, EContainerType &ContainerToAdd, ECraftingType &CraftTableType);
+
+	UFUNCTION(BlueprintCallable, Category = "Character Crafting Functions")
+	void AddCraftedItem(UItemInfo* ItemToAdd, EContainerType ContainerType, ECraftingType CraftingType, TSoftObjectPtr<UItemInfo> ItemAsset);
+
+	UFUNCTION()
+	void DelayCraftItem(UItemInfo* ItemToAdd, EContainerType ContainerType, ECraftingType CraftingType,TSoftObjectPtr<UItemInfo> ItemAsset);
+
+	
 	//--------------------------------------------------------------------------------------------
 	// CHARACTER HARVEST FUNCTIONS
 	//--------------------------------------------------------------------------------------------

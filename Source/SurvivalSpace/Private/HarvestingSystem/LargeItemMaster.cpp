@@ -6,6 +6,7 @@
 #include "DataAssets/PrimaryAssets/HarvestingResource.h"
 #include "DataAssets/PrimaryAssets/ItemInfo.h"
 #include "GameFramework/Character.h"
+#include "HarvestingSystem/DestructableHarvestableMaster.h"
 #include "Interfaces/SurvivalCharacterInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 

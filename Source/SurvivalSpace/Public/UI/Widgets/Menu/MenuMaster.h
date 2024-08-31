@@ -25,6 +25,9 @@ protected:
 	TObjectPtr<UCommonButton> InventoryButton;
 
 	UPROPERTY(BlueprintReadWrite, Category = "UI", meta=(BindWidget))
+	TObjectPtr<UCommonButton> EquipmentButton;
+
+	UPROPERTY(BlueprintReadWrite, Category = "UI", meta=(BindWidget))
 	TObjectPtr<UCommonButton> CraftingButton;
 
 	UPROPERTY(BlueprintReadWrite, Category = "UI", meta=(BindWidget))

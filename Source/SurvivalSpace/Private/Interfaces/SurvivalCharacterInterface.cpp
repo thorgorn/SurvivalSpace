@@ -62,5 +62,10 @@ void ISurvivalCharacterInterface::GetCraftingRecipesAndItems(ECraftingType Craft
 {
 }
 
+void ISurvivalCharacterInterface::CraftItem(TSoftObjectPtr<UItemRecipe> RecipeAsset, EContainerType ContainerType,
+	ECraftingType CraftingType)
+{
+}
+
 
 

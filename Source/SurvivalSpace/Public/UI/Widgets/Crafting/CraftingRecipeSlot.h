@@ -29,6 +29,8 @@ public:
 		virtual void NativeOnHovered() override;
 
 		virtual void NativeOnUnhovered() override;
+
+		virtual void NativeOnPressed() override;
 	//--------------------------------------------------------------------------------------------
 	// CRAFTING SLOT VARIABLES
 	//--------------------------------------------------------------------------------------------

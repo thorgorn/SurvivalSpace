@@ -175,7 +175,6 @@ void ASurvivalController::UpdateCraftingUI_Implementation()
 }
 
 
-
 void ASurvivalController::UpdateHotBarUI_Implementation()
 {
 	ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(GetPawn());

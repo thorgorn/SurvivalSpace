@@ -20,7 +20,7 @@ public:
 	ADestructableHarvestableMaster();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
+	
 	//--------------------------------------------------------------------------------------------
 	// DESTRUCTABLEHARVESTABLEMASTER PROPERTIES & VARIABLES
 	//--------------------------------------------------------------------------------------------
