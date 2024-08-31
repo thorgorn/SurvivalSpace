@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonActivatableWidget.h"
+#include "Components/Button.h"
 #include "Enums/Enums.h"
 #include "Structs/Structs.h"
 #include "GameInventoryLayout.generated.h"
@@ -30,7 +31,8 @@ public:
 	//--------------------------------------------------------------------------------------------
 	// STANDARD FUNCTIONS
 	//--------------------------------------------------------------------------------------------
-
+	virtual void NativePreConstruct() override;
+	
 	virtual void NativeConstruct() override;
 
 	virtual void NativeOnDeactivated() override;
@@ -49,6 +51,9 @@ public:
 
 	UFUNCTION()
 	void HideCraftProgressWidget();
+
+	UFUNCTION(BlueprintCallable, Category = "Widget Switcher")
+	void SwitchWidget(const int32 WidgetIndex);
 	
 	//--------------------------------------------------------------------------------------------
 	// BUTTON PROPERTIES & VARIABLES
@@ -83,8 +88,10 @@ public:
 
 
 private:
-	FTimerHandle DelayHideCraftProgress;
 
-
+	void ActivateWidget(int32 Index, const FString& Name, const FString& Description);
+	void UpdateWidgetText(const FString& Name, const FString& Description);
+	void SetButtonVisibility(UCommonButton* ActiveButton);
 	
+	FTimerHandle DelayHideCraftProgress;
 };

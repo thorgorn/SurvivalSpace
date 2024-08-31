@@ -15,7 +15,7 @@ class SURVIVALSPACE_API UMenuMaster : public UCommonUserWidget
 {
 	GENERATED_BODY()
 
-protected:
+public:
 
 	//--------------------------------------------------------------------------------------------
 	// MENU MASTER WIDGET PROPERTIES & VARIABLES

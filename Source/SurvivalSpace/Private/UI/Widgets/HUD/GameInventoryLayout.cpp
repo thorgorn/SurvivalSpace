@@ -3,6 +3,7 @@
 
 #include "UI/Widgets/HUD/GameInventoryLayout.h"
 
+#include "Components/Border.h"
 #include "Components/WidgetSwitcher.h"
 #include "Interfaces/ControllerInterface.h"
 #include "UI/Common/Buttons/CommonButton.h"
@@ -11,6 +12,15 @@
 #include "UI/Widgets/Crafting/CraftingItemContainerGrid.h"
 #include "UI/Widgets/Crafting/CraftingProgress.h"
 #include "UI/Widgets/Crafting/CraftingRecipeSlot.h"
+#include "UI/Widgets/Menu/MenuMaster.h"
+#include "UI/Widgets/Menu/WidgetInfo.h"
+
+void UGameInventoryLayout::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+	SwitchWidget(WidgetSwitcher->GetActiveWidgetIndex());
+}
 
 void UGameInventoryLayout::NativeConstruct()
 {
@@ -77,5 +87,67 @@ void UGameInventoryLayout::ShowCraftingProgress(FText ItemName)
 void UGameInventoryLayout::HideCraftProgressWidget()
 {
 	CraftingProgressWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UGameInventoryLayout::SwitchWidget(const int32 WidgetIndex)
+{
+	if (!WidgetSwitcher || !MenuMasterWidget || !WidgetInfoWidget)
+	{
+		return;
+	}
+
+	switch (WidgetIndex)
+	{
+	case 0:
+		ActivateWidget(0, "Inventory", "Manage your items and containers here");
+		SetButtonVisibility(MenuMasterWidget->InventoryButton);
+		break;
+	case 1:
+		ActivateWidget(1, "EQUIPMENT", "Equip Items and manage your character");
+		SetButtonVisibility(MenuMasterWidget->EquipmentButton);
+		break;
+	case 2:
+		WidgetSwitcher->SetActiveWidgetIndex(2);
+		CraftingWidget->CraftingContainerGrid->InitializeSlots();
+		SetButtonVisibility(MenuMasterWidget->CraftingButton);
+		UpdateWidgetText("CRAFTING", "Craft your items and manage resources");
+		GetDesiredFocusTarget()->SetFocus();
+		break;
+	case 3:
+	case 4:
+	case 5:
+		WidgetSwitcher->SetActiveWidgetIndex(WidgetIndex);
+		break;
+	default:
+		break;
+	}
+}
+
+void UGameInventoryLayout::ActivateWidget(int32 Index, const FString& Name, const FString& Description)
+{
+	WidgetSwitcher->SetActiveWidgetIndex(Index);
+	UpdateWidgetText(Name, Description);
+	GetDesiredFocusTarget()->SetFocus();
+}
+
+void UGameInventoryLayout::UpdateWidgetText(const FString& Name, const FString& Description)
+{
+	FText WidgetName = FText::FromString(Name);
+	FText WidgetDescription = FText::FromString(Description);
+	WidgetInfoWidget->UpdateText(WidgetName, WidgetDescription);
+}
+
+void UGameInventoryLayout::SetButtonVisibility(UCommonButton* ActiveButton)
+{
+	if (!MenuMasterWidget) return;
+
+	MenuMasterWidget->InventoryButton->SelectedImage->SetVisibility(ESlateVisibility::Hidden);
+	MenuMasterWidget->EquipmentButton->SelectedImage->SetVisibility(ESlateVisibility::Hidden);
+	MenuMasterWidget->CraftingButton->SelectedImage->SetVisibility(ESlateVisibility::Hidden);
+
+	if (ActiveButton && ActiveButton->SelectedImage)
+	{
+		ActiveButton->SelectedImage->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
