@@ -46,6 +46,36 @@ void UGameInventoryLayout::NativeOnDeactivated()
 	}
 }
 
+FReply UGameInventoryLayout::NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	int32 CurrentIndex = WidgetSwitcher->GetActiveWidgetIndex();
+	
+	if (InKeyEvent.GetKey() == EKeys::Gamepad_RightShoulder || InKeyEvent.GetKey() == EKeys::D)
+	{
+		int32 IncrementIndex = CurrentIndex + 1;
+		if (IncrementIndex >= WidgetSwitcher->GetNumWidgets())
+		{
+			IncrementIndex = 0;
+		}
+		SwitchWidget(IncrementIndex);
+		return FReply::Handled();
+	}
+	
+	if (InKeyEvent.GetKey() == EKeys::Gamepad_LeftShoulder || InKeyEvent.GetKey() == EKeys::A)
+	{
+		int32 SubtractIndex = CurrentIndex - 1;
+		if (SubtractIndex < 0)
+		{
+			SubtractIndex = WidgetSwitcher->GetNumWidgets() - 1;
+		}
+		SwitchWidget(SubtractIndex);
+		return FReply::Handled();
+	}
+	
+	return Super::NativeOnPreviewKeyDown(InGeometry, InKeyEvent);
+}
+
+
 void UGameInventoryLayout::InventoryButtonClicked()
 {
 	DeactivateWidget();

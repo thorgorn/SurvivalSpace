@@ -36,6 +36,8 @@ public:
 	virtual void NativeConstruct() override;
 
 	virtual void NativeOnDeactivated() override;
+
+	virtual FReply NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 	
 	//--------------------------------------------------------------------------------------------
 	// BUTTON FUNCTIONS
