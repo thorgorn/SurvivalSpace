@@ -63,7 +63,7 @@ public:
 	virtual void SetupCraftableItems(ECraftingType CraftingType, TArray<FSimpleItemStructure> ItemArray);
 
 	UFUNCTION(Blueprintable)
-	virtual void DisplayCraftProgress();
+	virtual void DisplayCraftProgress(FText ItemName);
 	
 	
 };

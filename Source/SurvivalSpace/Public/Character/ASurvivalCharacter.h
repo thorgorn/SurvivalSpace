@@ -253,7 +253,7 @@ protected:
 
 	virtual void CraftItem(TSoftObjectPtr<UItemRecipe> RecipeAsset, EContainerType ContainerType, ECraftingType CraftingType) override;
 
-	virtual void ShowCraftProgress() override;
+	virtual void ShowCraftProgress(FText ItemName) override;
 
 	//--------------------------------------------------------------------------------------------
 	// CHARACTER CRAFTING FUNCTIONS

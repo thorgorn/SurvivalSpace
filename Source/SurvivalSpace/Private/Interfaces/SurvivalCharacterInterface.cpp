@@ -67,7 +67,7 @@ void ISurvivalCharacterInterface::CraftItem(TSoftObjectPtr<UItemRecipe> RecipeAs
 {
 }
 
-void ISurvivalCharacterInterface::ShowCraftProgress()
+void ISurvivalCharacterInterface::ShowCraftProgress(FText ItemName)
 {
 }
 

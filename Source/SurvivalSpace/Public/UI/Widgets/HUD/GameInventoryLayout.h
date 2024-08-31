@@ -45,7 +45,7 @@ public:
 	void UpdateCraftWidget(ECraftingType CraftingType, TArray<FSimpleItemStructure> ItemArray);
 
 	UFUNCTION(BlueprintCallable, Category = "ButtonFunctions")
-	void ShowCraftingProgress();
+	void ShowCraftingProgress(FText ItemName);
 
 	UFUNCTION()
 	void HideCraftProgressWidget();

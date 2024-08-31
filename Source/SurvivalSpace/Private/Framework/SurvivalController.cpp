@@ -123,14 +123,14 @@ void ASurvivalController::SetupCraftableItems(ECraftingType CraftingType, TArray
 	CraftWidgetOnClient(CraftingType, ItemArray);
 }
 
-void ASurvivalController::DisplayCraftProgress()
+void ASurvivalController::DisplayCraftProgress(FText ItemName)
 {
 	if (!RootLayout)
 	{
 		return;
 	}
 
-	RootLayout->GameInventoryLayout->ShowCraftingProgress();
+	RootLayout->GameInventoryLayout->ShowCraftingProgress(ItemName);
 }
 
 

@@ -372,12 +372,12 @@ void AASurvivalCharacter::CraftItem(TSoftObjectPtr<UItemRecipe> RecipeAsset, ECo
 	CraftItemOnServer(RecipeAsset, ContainerType, CraftingType);
 }
 
-void AASurvivalCharacter::ShowCraftProgress()
+void AASurvivalCharacter::ShowCraftProgress(FText ItemName)
 {
 	IControllerInterface* ControllerInterface = Cast<IControllerInterface>(GetController());
 	if (ControllerInterface)
 	{
-		ControllerInterface->DisplayCraftProgress();
+		ControllerInterface->DisplayCraftProgress(ItemName);
 	}
 }
 

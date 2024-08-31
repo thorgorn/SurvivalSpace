@@ -64,12 +64,12 @@ void UGameInventoryLayout::UpdateCraftWidget(ECraftingType CraftingType, TArray<
 
 }
 
-void UGameInventoryLayout::ShowCraftingProgress()
+void UGameInventoryLayout::ShowCraftingProgress(FText ItemName)
 {
 	if (CraftingProgressWidget)
 	{
 		CraftingProgressWidget->SetVisibility(ESlateVisibility::Visible);
-		CraftingProgressWidget->CraftItem();
+		CraftingProgressWidget->CraftItem(ItemName);
 		GetWorld()->GetTimerManager().SetTimer(DelayHideCraftProgress, this, &UGameInventoryLayout::HideCraftProgressWidget, 3.0f, false);
 	}
 }

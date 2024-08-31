@@ -60,7 +60,7 @@ void UCraftingRecipeSlot::NativeOnPressed()
 			if (CharacterInterface)
 			{
 				CharacterInterface->CraftItem(RecipeAsset, ContainerType, CraftingType);
-				CharacterInterface->ShowCraftProgress();
+				CharacterInterface->ShowCraftProgress(ItemName);
 			}
 		}
 	}

@@ -69,7 +69,7 @@ protected:
 
 	virtual void SetupCraftableItems(ECraftingType CraftingType, TArray<FSimpleItemStructure> ItemArray) override;
 
-	virtual void DisplayCraftProgress() override;
+	virtual void DisplayCraftProgress(FText ItemName) override;
 	
 
 	//--------------------------------------------------------------------------------------------
