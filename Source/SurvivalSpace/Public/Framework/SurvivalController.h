@@ -68,6 +68,8 @@ protected:
 	virtual void SetSelectedItem(EContainerType ContainerType, int32 SelectedIndex, bool ItemInFirstSlot, EArmorType ArmorType) override;
 
 	virtual void SetupCraftableItems(ECraftingType CraftingType, TArray<FSimpleItemStructure> ItemArray) override;
+
+	virtual void DisplayCraftProgress() override;
 	
 
 	//--------------------------------------------------------------------------------------------

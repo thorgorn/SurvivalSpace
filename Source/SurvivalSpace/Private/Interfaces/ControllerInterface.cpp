@@ -53,5 +53,9 @@ void IControllerInterface::SetupCraftableItems(ECraftingType CraftingType, TArra
 {
 }
 
+void IControllerInterface::DisplayCraftProgress()
+{
+}
+
 
 

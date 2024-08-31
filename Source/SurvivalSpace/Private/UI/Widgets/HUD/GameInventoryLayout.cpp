@@ -9,6 +9,7 @@
 #include "UI/Widgets/Crafting/Crafting.h"
 #include "UI/Widgets/Crafting/CraftingContainer.h"
 #include "UI/Widgets/Crafting/CraftingItemContainerGrid.h"
+#include "UI/Widgets/Crafting/CraftingProgress.h"
 #include "UI/Widgets/Crafting/CraftingRecipeSlot.h"
 
 void UGameInventoryLayout::NativeConstruct()
@@ -61,5 +62,20 @@ void UGameInventoryLayout::UpdateCraftWidget(ECraftingType CraftingType, TArray<
 		break;
 	}
 
+}
+
+void UGameInventoryLayout::ShowCraftingProgress()
+{
+	if (CraftingProgressWidget)
+	{
+		CraftingProgressWidget->SetVisibility(ESlateVisibility::Visible);
+		CraftingProgressWidget->CraftItem();
+		GetWorld()->GetTimerManager().SetTimer(DelayHideCraftProgress, this, &UGameInventoryLayout::HideCraftProgressWidget, 3.0f, false);
+	}
+}
+
+void UGameInventoryLayout::HideCraftProgressWidget()
+{
+	CraftingProgressWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 

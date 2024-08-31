@@ -123,6 +123,16 @@ void ASurvivalController::SetupCraftableItems(ECraftingType CraftingType, TArray
 	CraftWidgetOnClient(CraftingType, ItemArray);
 }
 
+void ASurvivalController::DisplayCraftProgress()
+{
+	if (!RootLayout)
+	{
+		return;
+	}
+
+	RootLayout->GameInventoryLayout->ShowCraftingProgress();
+}
+
 
 void ASurvivalController::ResetSelectedItemStatus()
 {

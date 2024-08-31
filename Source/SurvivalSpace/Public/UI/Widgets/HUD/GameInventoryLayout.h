@@ -8,6 +8,7 @@
 #include "Structs/Structs.h"
 #include "GameInventoryLayout.generated.h"
 
+class UCraftingProgress;
 class UPlayerName;
 class UWidgetInfo;
 class UMenuMaster;
@@ -42,6 +43,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ButtonFunctions")
 	void UpdateCraftWidget(ECraftingType CraftingType, TArray<FSimpleItemStructure> ItemArray);
+
+	UFUNCTION(BlueprintCallable, Category = "ButtonFunctions")
+	void ShowCraftingProgress();
+
+	UFUNCTION()
+	void HideCraftProgressWidget();
 	
 	//--------------------------------------------------------------------------------------------
 	// BUTTON PROPERTIES & VARIABLES
@@ -60,6 +67,9 @@ public:
 	TObjectPtr<UCrafting> CraftingWidget;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Widgets", meta=(BindWidget))
+	TObjectPtr<UCraftingProgress> CraftingProgressWidget;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Widgets", meta=(BindWidget))
 	TObjectPtr<UMenuMaster> MenuMasterWidget;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Widgets", meta=(BindWidget))
@@ -70,6 +80,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Widgets", meta=(BindWidget))
 	TObjectPtr<UWidgetSwitcher> WidgetSwitcher;
+
+
+private:
+	FTimerHandle DelayHideCraftProgress;
 
 
 	

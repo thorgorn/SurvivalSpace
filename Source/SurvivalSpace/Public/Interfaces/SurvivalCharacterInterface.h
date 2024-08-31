@@ -76,4 +76,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void CraftItem(TSoftObjectPtr<UItemRecipe> RecipeAsset, EContainerType ContainerType, ECraftingType CraftingType);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void ShowCraftProgress();
 };

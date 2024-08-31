@@ -17,11 +17,18 @@ class SURVIVALSPACE_API UCrafting : public UUserWidget
 {
 	GENERATED_BODY()
 
+
+
+public:
+
+	//--------------------------------------------------------------------------------------------
+	// CRAFTING WIDGET FUNCTIONS
+	//--------------------------------------------------------------------------------------------
+		UFUNCTION(BlueprintImplementableEvent)
+		void CraftItem();
 	//--------------------------------------------------------------------------------------------
 	// CRAFTING WIDGET PROPERTIES & VARIABLES
 	//--------------------------------------------------------------------------------------------
-
-public:
 	
 	UPROPERTY(BlueprintReadWrite, Category = "Widgets", meta=(BindWidget))
 	TObjectPtr<UCraftingItemContainerGrid> CraftingItemContainerGrid;

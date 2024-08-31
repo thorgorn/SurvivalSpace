@@ -7,6 +7,7 @@
 #include "Structs/Structs.h"
 #include "CraftingInfo.generated.h"
 
+class UProgressBar;
 class UVerticalBox;
 class UCraftItemResource;
 class UItemInfo;
@@ -32,6 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetupWidgetData();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void CraftItem();
+
 	//--------------------------------------------------------------------------------------------
 	// CRAFTING ITEM INFO PROPERTIES
 	//--------------------------------------------------------------------------------------------
@@ -44,6 +48,12 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "UI", meta=(BindWidget))
 	TObjectPtr<UVerticalBox> ResourceBox;
+
+	UPROPERTY(BlueprintReadWrite, Category = "UI", meta=(BindWidget))
+	TObjectPtr<UHorizontalBox> CraftingProgressBox;
+
+	UPROPERTY(BlueprintReadWrite, Category = "UI", meta=(BindWidget))
+	TObjectPtr<UProgressBar> CraftingProgressBar;
 
 	UPROPERTY(BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UTextBlock> ItemDescription;

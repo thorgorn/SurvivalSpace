@@ -77,8 +77,6 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Items Container Master")
 	void AddItem(const FItemStructure& Item, bool AddSplitItem);
 	
-
-
 	UFUNCTION(BlueprintPure, Category = "Items Container Master")
 	virtual bool AddItemToIndex(const FItemStructure& ItemInfo, int32 TargetIndex,
 	int32 FromIndex);

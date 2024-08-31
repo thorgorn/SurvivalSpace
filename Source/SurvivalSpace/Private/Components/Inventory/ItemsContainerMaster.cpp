@@ -95,6 +95,7 @@ void UItemsContainerMaster::CraftItem(TArray<FItemRecipes> RequiredItems)
                 if (InventoryArray[ItemIndex].Quantity == 0)
                 {
                     RemoveItemAtIndex(InventoryArray[ItemIndex].Index);
+                	
                 	if (AASurvivalCharacter* SurvivalCharacter = Cast<AASurvivalCharacter>(GetOwner()))
                 	{
                 		ISurvivalCharacterInterface* CharacterInterface = Cast<ISurvivalCharacterInterface>(SurvivalCharacter);
